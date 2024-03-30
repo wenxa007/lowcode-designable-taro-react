@@ -89,6 +89,11 @@ const propsSchema = createFieldSchema({
                 ],
                 default: 'vertical',
               },
+              list: {
+                type: 'boolean',
+                'x-decorator': 'FormItem',
+                'x-component': 'Switch',
+              },
             },
             'x-component-props': {
               title: 'Checkbox.Group属性',
@@ -153,6 +158,7 @@ Checkbox.Behavior = createBehavior({
             min: '限制至少选择数',
             labelPosition: '文本所在的位置',
             direction: '排列方向',
+            list: '列表模式'
           },
           shape: '形状',
           ...imgsLocales,

@@ -78,7 +78,7 @@ const propsSchema = createFieldSchema({
               },
             },
             'x-component-props': {
-              title: 'Checkbox.Group属性',
+              title: 'Radio.Group属性',
               defaultExpand: true,
             },
           },

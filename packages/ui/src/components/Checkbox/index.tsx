@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect, mapProps, mapReadPretty } from '@formily/react'
-import { Checkbox as Component, Image } from '@nutui/nutui-react-taro'
+import { Checkbox as Component, Image } from '@nutui/nutui-react-taro/dist/esm/nutui-react.es.js'
 import {
   CheckboxGroupProps,
   CheckboxProps,
@@ -35,24 +35,37 @@ export const Checkbox = connect(
       value: string | number,
       disabled: boolean
     }[] = (dataSource || []) as any
+
+    const propNames = ['noActiveIcon', 'activeIcon', 'indeterminateIcon']
+    const IconImageConfig = getIconImageConfig(propNames, {
+      noActiveIcon,
+      activeIcon,
+      indeterminateIcon,
+    })
+    if (IconImageConfig.noActiveIcon) {
+      IconImageConfig.icon = IconImageConfig.noActiveIcon
+      delete IconImageConfig.noActiveIcon
+    }
+
+    const options = _dataSource.map((item, i) => {
+      return {
+        ...props,
+        ...IconImageConfig,
+        label: item.label,
+        value: item.value as any,
+        disabled: item.disabled
+      }
+    })
     return (
       <Component.Group
         {...(CheckboxGroupProps || {})}
         value={value}
         onChange={onChange}
-        disabled={disabled}
+        disabled={disabled ? true : undefined}
+        options={options}
       >
-        {_dataSource.map((item, i) => {
-          const propNames = ['noActiveIcon', 'activeIcon', 'indeterminateIcon']
-          const IconImageConfig = getIconImageConfig(propNames, {
-            noActiveIcon,
-            activeIcon,
-            indeterminateIcon,
-          })
-          if (IconImageConfig.noActiveIcon) {
-            IconImageConfig.icon = IconImageConfig.noActiveIcon
-            delete IconImageConfig.noActiveIcon
-          }
+        {/* {_dataSource.map((item, i) => {
+
           return (
             <Component
               {...props}
@@ -64,7 +77,7 @@ export const Checkbox = connect(
               {item.label}
             </Component>
           )
-        })}
+        })} */}
       </Component.Group>
     )
   },

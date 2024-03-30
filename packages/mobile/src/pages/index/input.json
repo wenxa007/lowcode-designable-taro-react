@@ -125,6 +125,137 @@
                 "x-designable-id": "iw8i15c0887",
                 "x-index": 2
               },
+              "3s9i8eb8vuk": {
+                "type": "string",
+                "title": "文本框",
+                "x-decorator": "FormItem",
+                "x-component": "TextArea",
+                "x-validator": [],
+                "x-component-props": {
+                  "style": {
+                    "position": "relative"
+                  },
+                  "eventsConfig": {}
+                },
+                "x-decorator-props": {
+                  "style": {
+                    "position": "relative"
+                  }
+                },
+                "x-designable-id": "3s9i8eb8vuk",
+                "x-index": 3
+              },
+              "0na4fqmybu0": {
+                "type": "string",
+                "title": "复选按钮",
+                "x-decorator": "FormItem",
+                "x-component": "Checkbox",
+                "enum": [
+                  {
+                    "children": [],
+                    "label": "选项1",
+                    "value": "1",
+                    "disabled": true
+                  },
+                  {
+                    "children": [],
+                    "label": "选项2",
+                    "value": "2",
+                    "disabled": false
+                  },
+                  {
+                    "children": [],
+                    "label": "选项 3",
+                    "value": "3",
+                    "disabled": false
+                  }
+                ],
+                "x-validator": [],
+                "x-component-props": {
+                  "shape": "round",
+                  "style": {
+                    "position": "relative"
+                  },
+                  "eventsConfig": {},
+                  "CheckboxGroupProps": {
+                    "labelPosition": "right",
+                    "direction": "horizontal"
+                  },
+                  "noActiveIcon": {
+                    "imageProps": {
+                      "mode": "aspectFit",
+                      "style": {
+                        "position": "relative"
+                      }
+                    },
+                    "iconFontProps": {
+                      "style": {
+                        "position": "relative"
+                      },
+                      "iconName": "heart"
+                    }
+                  },
+                  "activeIcon": {
+                    "imageProps": {
+                      "mode": "aspectFit",
+                      "style": {
+                        "position": "relative"
+                      }
+                    },
+                    "iconFontProps": {
+                      "style": {
+                        "position": "relative"
+                      },
+                      "iconName": "heart-fill",
+                      "color": "rgb(245, 61, 77)"
+                    }
+                  }
+                },
+                "x-decorator-props": {
+                  "style": {
+                    "position": "relative"
+                  }
+                },
+                "x-designable-id": "0na4fqmybu0",
+                "x-index": 4
+              },
+              "ozvt5e5o303": {
+                "type": "string",
+                "title": "单选按钮",
+                "x-decorator": "FormItem",
+                "x-component": "Radio",
+                "enum": [
+                  {
+                    "label": "选项1",
+                    "value": "1",
+                    "disabled": true
+                  },
+                  {
+                    "label": "选项2",
+                    "value": "2",
+                    "disabled": false
+                  }
+                ],
+                "x-validator": [],
+                "x-component-props": {
+                  "shape": "round",
+                  "style": {
+                    "position": "relative"
+                  },
+                  "eventsConfig": {},
+                  "RadioGroupProps": {
+                    "labelPosition": "right",
+                    "direction": "horizontal"
+                  }
+                },
+                "x-decorator-props": {
+                  "style": {
+                    "position": "relative"
+                  }
+                },
+                "x-designable-id": "ozvt5e5o303",
+                "x-index": 5
+              },
               "1xyi4y2n3qu": {
                 "type": "void",
                 "x-component": "WidgetCell",
@@ -138,7 +269,7 @@
                   }
                 },
                 "x-designable-id": "1xyi4y2n3qu",
-                "x-index": 3,
+                "x-index": 6,
                 "properties": {
                   "l8izj4ecta6": {
                     "type": "void",
@@ -374,6 +505,6 @@
         }
       }
     },
-    "x-designable-id": "xt6av1ibnsc"
+    "x-designable-id": "h0og635dpae"
   }
 }
