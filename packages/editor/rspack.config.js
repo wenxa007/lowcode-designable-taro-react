@@ -13,6 +13,7 @@ process.env.TARO_PLATFORM = 'web'
  * @type {import('@rspack/cli').Configuration}
  */
 module.exports = {
+  // cache: false,
   entry: {
     main: './src/index.tsx', // 配置项目入口文件
   },

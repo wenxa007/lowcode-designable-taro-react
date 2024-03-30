@@ -112,8 +112,8 @@ const toDesignableFieldProps = (
     schema['x-decorator'] && FormPath.getIn(components, schema['x-decorator'])
   const component =
     schema['x-component'] && FormPath.getIn(components, schema['x-component'])
-  const decoratorProps = schema['x-decorator-props'] || {}
-  const componentProps = schema['x-component-props'] || {}
+  const decoratorProps = filterExpression(schema['x-decorator-props'] || {})
+  const componentProps = filterExpression(schema['x-component-props'] || {})
 
   if (decorator) {
     results.decorator = [decorator, toJS(decoratorProps)]

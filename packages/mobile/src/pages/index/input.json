@@ -104,6 +104,27 @@
                 "x-index": 1,
                 "required": true
               },
+              "iw8i15c0887": {
+                "type": "number",
+                "title": "数字输入框",
+                "x-decorator": "FormItem",
+                "x-component": "InputNumber",
+                "x-validator": [],
+                "x-component-props": {
+                  "style": {
+                    "position": "relative"
+                  },
+                  "eventsConfig": {},
+                  "formatter": "{{(num) => `￥${num}`}}"
+                },
+                "x-decorator-props": {
+                  "style": {
+                    "position": "relative"
+                  }
+                },
+                "x-designable-id": "iw8i15c0887",
+                "x-index": 2
+              },
               "1xyi4y2n3qu": {
                 "type": "void",
                 "x-component": "WidgetCell",
@@ -117,7 +138,7 @@
                   }
                 },
                 "x-designable-id": "1xyi4y2n3qu",
-                "x-index": 2,
+                "x-index": 3,
                 "properties": {
                   "l8izj4ecta6": {
                     "type": "void",
@@ -353,6 +374,6 @@
         }
       }
     },
-    "x-designable-id": "791138kk9ty"
+    "x-designable-id": "xt6av1ibnsc"
   }
 }

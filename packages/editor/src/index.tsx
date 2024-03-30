@@ -68,6 +68,7 @@ import {
 import { loadInitialSchema, saveSchema } from './service'
 import { PreviewWidget, SchemaEditorWidget } from './widgets'
 
+import '../../ui/src/tailwind-compat.css'
 import '@tarojs/components/dist/taro-components/taro-components.css'
 import '@nutui/nutui-react-taro/dist/style.css'
 import '@nutui/icons-react-taro/dist/style_iconfont.css'

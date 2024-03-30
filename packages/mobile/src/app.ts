@@ -1,5 +1,6 @@
 import { Component } from 'react'
 
+import '../../ui/src/tailwind-compat.css'
 import '@nutui/nutui-react-taro/dist/style.css'
 import '@nutui/icons-react-taro/dist/style_iconfont.css'
 import './app.scss'
