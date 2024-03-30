@@ -22,7 +22,6 @@ module.exports = {
     client: {
       overlay: false
     }
-    // overlay: false
   },
   output: {
     assetModuleFilename: './assets/[hash][ext][query]',
