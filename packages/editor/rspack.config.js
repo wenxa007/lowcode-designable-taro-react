@@ -19,6 +19,9 @@ module.exports = {
   },
   devServer: {
     allowedHosts: 'all',
+    client: {
+      overlay: false
+    }
     // overlay: false
   },
   output: {
