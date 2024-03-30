@@ -19,6 +19,7 @@ module.exports = {
   },
   devServer: {
     allowedHosts: 'all',
+    // overlay: false
   },
   output: {
     assetModuleFilename: './assets/[hash][ext][query]',
@@ -131,6 +132,5 @@ module.exports = {
         type: 'asset',
       },
     ],
-  },
-  cache: false,
+  }
 }
