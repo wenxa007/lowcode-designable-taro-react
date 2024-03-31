@@ -30,9 +30,13 @@ demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-m
 
 ![2simpleform](./showImage/gif/1readme/2simpleform.gif)
 
-### 联动逻辑
+### 联动逻辑 配置响应器
 
+![3reaction](./showImage/gif/1readme/3reaction.gif)
 
+### 配置图标
+
+![4useIcon](./showImage/gif/1readme/4useIcon.gif)
 
 ## 项目启动
 
