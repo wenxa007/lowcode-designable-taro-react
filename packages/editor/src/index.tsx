@@ -88,6 +88,7 @@ GlobalRegistry.registerDesignerLocales({
     },
   },
 })
+GlobalRegistry.setDesignerLanguage('zh-cn')
 
 // 注册formily自定义组件全局数据源
 formilyStoreRegister({

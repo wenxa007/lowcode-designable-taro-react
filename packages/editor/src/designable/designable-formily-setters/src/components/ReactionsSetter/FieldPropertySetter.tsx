@@ -67,21 +67,23 @@ export const FieldPropertySetter: React.FC<IFieldPropertySetterProps> = (
         }}
         items={FieldProperties.map((key) => {
           if (isPlainObj(key)) {
-            return (
-              <Menu.Item key={key.key}>
+            return {
+              key: key.key,
+              label: (
                 <TextWidget
                   token={`SettingComponents.ReactionsSetter.${
                     key.token || key.key
                   }`}
                 />
-              </Menu.Item>
-            )
+              ),
+            }
           }
-          return (
-            <Menu.Item key={key}>
+          return {
+            key: key,
+            label: (
               <TextWidget token={`SettingComponents.ReactionsSetter.${key}`} />
-            </Menu.Item>
-          )
+            ),
+          }
         })}
       ></Menu>
       <div className={prefix + '-coder-wrapper'}>

@@ -20,6 +20,20 @@ demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-m
 ![editor](./showImage/editor.png)
 ![mobile](./showImage/mobile.png)
 
+## 使用演示
+
+### todoList
+
+![1todolist](./showImage/gif/1readme/1todolist.gif)
+
+### 制作表单
+
+![2simpleform](./showImage/gif/1readme/2simpleform.gif)
+
+### 联动逻辑
+
+
+
 ## 项目启动
 
 **依赖安装**
