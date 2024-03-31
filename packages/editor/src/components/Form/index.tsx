@@ -20,7 +20,18 @@ import { createVoidFieldSchema } from '../Field/shared'
 
 export const Form: DnFC<React.ComponentProps<typeof Component>> = (props) => {
   const node = useTreeNode()
-  if (node.children.length === 0) return <DroppableWidget />
+  if (node.children.length === 0) {
+    const style = props.style || {}
+    return (
+      <div
+        style={{
+          ...style,
+        }}
+      >
+        <DroppableWidget />
+      </div>
+    )
+  }
   return <Component {...props}></Component>
 }
 

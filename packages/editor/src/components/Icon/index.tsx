@@ -1,18 +1,24 @@
 import React from 'react'
+import { cloneDeep } from 'lodash-es'
 import { Icon as Component } from 'ui-nutui-react-taro'
 
 import {
   createBehavior,
   createResource,
+  TreeNode,
 } from '@/designable/designable-core/src'
 import { DnFC } from '@/designable/designable-react/src'
+import { IRect } from '@/designable/designable-shared/src'
 
+import icon from '../../assets/icon.png'
 import { AllLocales } from '../../locales'
 import { AllSchemas } from '../../schemas'
 import { createVoidFieldSchema } from '../Field'
-import { iconFontDesignableConfig, iconFontLocals } from '../shared'
-
-import icon from '../../assets/icon.png'
+import {
+  behaviorOfResizeAndtranslate,
+  iconFontDesignableConfig,
+  iconFontLocals,
+} from '../shared'
 
 export const Icon: DnFC<React.ComponentProps<typeof Component>> = (props) => {
   return <Component {...props}></Component>
@@ -26,7 +32,7 @@ const propsSchema = createVoidFieldSchema({
         'x-decorator': 'FormItem',
         'x-component': 'Switch',
       },
-      ...iconFontDesignableConfig.properties
+      ...iconFontDesignableConfig.properties,
     },
   },
 }) as any
@@ -40,6 +46,17 @@ Object.entries(customStyles).forEach(
   (values) => (styleSchema[`style.${values[0]}`] = values[1])
 )
 
+const resizeAndtranslate = cloneDeep(behaviorOfResizeAndtranslate)
+resizeAndtranslate.resizable.move = (
+  node: TreeNode,
+  element: HTMLElement,
+  rect: IRect
+) => {
+  if (node.props['x-component-props'].useWidthAsSize) {
+    element.style.fontSize = rect.width + 'px'
+  }
+}
+
 Icon.Behavior = createBehavior({
   name: 'Icon',
   extends: ['Field'],
@@ -47,6 +64,7 @@ Icon.Behavior = createBehavior({
   designerProps: {
     propsSchema,
     defaultProps: {},
+    ...resizeAndtranslate,
   },
   designerLocales: {
     'zh-CN': {

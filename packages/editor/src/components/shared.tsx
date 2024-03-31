@@ -4,6 +4,7 @@ import { IconFont } from '@nutui/icons-react-taro'
 import { Select } from 'antd'
 import * as lodash from 'lodash-es'
 
+import { IResizable, ITranslate } from '@/designable/designable-core/src'
 import { CSSStyleLocales } from '@/locales/Field'
 
 import * as AllSchemas from '../schemas/all'
@@ -98,9 +99,9 @@ export const iconFontDesignableConfig = {
       'x-component': 'SizeInput',
     },
     useWidthAsSize: {
-        type: 'boolean',
-        'x-decorator': 'FormItem',
-        'x-component': 'Switch',
+      type: 'boolean',
+      'x-decorator': 'FormItem',
+      'x-component': 'Switch',
     },
     // width: {
     //   type: 'string',
@@ -223,60 +224,28 @@ export const iconFontLocals = {
 
 export const behaviorOfResizeAndtranslate = {
   resizable: {
-    width(node, element) {
+    width: true,
+    height: true,
+    end(node, element) {
       const width = Number(
         node.props?.style?.width ?? element.getBoundingClientRect().width
       )
-      return {
-        // plus: () => {
-        //   node.props = node.props || {}
-        //   node.props.style = node.props.style || {}
-        //   node.props.style.width = width + 10
-        // },
-        // minus: () => {
-        //   node.props = node.props || {}
-        //   node.props.style = node.props.style || {}
-        //   node.props.style.width = width - 10
-        // },
-        resize() {
-          node.props = node.props || {}
-          const styleKey = node.props['x-decorator']
-            ? 'x-decorator-props'
-            : 'x-component-props'
-          node.props[styleKey] = node.props[styleKey] || {}
-          node.props[styleKey].style = node.props[styleKey].style || {}
-          node.props[styleKey].style.width = width + 'px'
-        },
-      }
-    },
-    height(node, element) {
       const height = Number(
         node.props?.style?.height ?? element.getBoundingClientRect().height
       )
-      return {
-        // plus: () => {
-        //   node.props = node.props || {}
-        //   node.props.style = node.props.style || {}
-        //   node.props.style.height = height + 10
-        // },
-        // minus: () => {
-        //   node.props = node.props || {}
-        //   node.props.style = node.props.style || {}
-        //   node.props.style.height = height - 10
-        // },
-        resize() {
-          node.props = node.props || {}
-          const styleKey = node.props['x-decorator']
-            ? 'x-decorator-props'
-            : 'x-component-props'
-          node.props[styleKey] = node.props[styleKey] || {}
-          node.props[styleKey].style = node.props[styleKey].style || {}
-          node.props[styleKey].style.height = height + 'px'
-        },
-      }
+      node.props = node.props || {}
+      const styleKey = node.props['x-decorator']
+        ? 'x-decorator-props'
+        : 'x-component-props'
+      node.props[styleKey] = node.props[styleKey] || {}
+      node.props[styleKey].style = node.props[styleKey].style || {}
+      node.props[styleKey].style.width = width + 'px'
+      node.props[styleKey].style.height = height + 'px'
     },
-  },
+  } as IResizable,
   translatable: {
+    x: true,
+    y: true,
     reset(node) {
       node.props = node.props || {}
       const styleKey = node.props['x-decorator']
@@ -292,46 +261,29 @@ export const behaviorOfResizeAndtranslate = {
         nodeStyle.top = '0px'
       }
     },
-    x(node, diffX) {
-      return {
-        translate: () => {
-          node.props = node.props || {}
-          const styleKey = node.props['x-decorator']
-            ? 'x-decorator-props'
-            : 'x-component-props'
-          node.props[styleKey] = node.props[styleKey] || {}
-          node.props[styleKey].style = node.props[styleKey].style || {}
-          const nodeStyle = node.props[styleKey].style
+    end(node, diffX, diffY) {
+      node.props = node.props || {}
+      const styleKey = node.props['x-decorator']
+        ? 'x-decorator-props'
+        : 'x-component-props'
+      node.props[styleKey] = node.props[styleKey] || {}
+      node.props[styleKey].style = node.props[styleKey].style || {}
+      const nodeStyle = node.props[styleKey].style
 
-          let left = 0
-          const theString = nodeStyle.left || '0px'
-          if (theString?.includes('px')) {
-            left = Number(String(theString).slice(0, -2))
-          }
-          nodeStyle.left = left + parseInt(String(diffX)) + 'px'
-        },
+      let left = 0
+      const theString1 = nodeStyle.left || '0px'
+      if (theString1?.includes('px')) {
+        left = Number(String(theString1).slice(0, -2))
       }
-    },
-    y(node, diffY) {
-      return {
-        translate: () => {
-          node.props = node.props || {}
-          const styleKey = node.props['x-decorator']
-            ? 'x-decorator-props'
-            : 'x-component-props'
-          node.props[styleKey] = node.props[styleKey] || {}
-          node.props[styleKey].style = node.props[styleKey].style || {}
-          const nodeStyle = node.props[styleKey].style
+      nodeStyle.left = left + parseInt(String(diffX)) + 'px'
 
-          let top = 0
-          const theString = nodeStyle.top || '0px'
-          if (theString?.includes('px')) {
-            top = Number(String(theString).slice(0, -2))
-          }
-
-          nodeStyle.top = top + parseInt(String(diffY)) + 'px'
-        },
+      let top = 0
+      const theString2 = nodeStyle.top || '0px'
+      if (theString2?.includes('px')) {
+        top = Number(String(theString2).slice(0, -2))
       }
+
+      nodeStyle.top = top + parseInt(String(diffY)) + 'px'
     },
-  },
+  } as ITranslate,
 }

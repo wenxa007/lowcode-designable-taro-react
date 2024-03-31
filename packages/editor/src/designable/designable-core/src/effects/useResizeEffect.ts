@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import { Engine, CursorDragType } from '../models'
 import { DragStartEvent, DragMoveEvent, DragStopEvent } from '../events'
 
@@ -74,6 +75,7 @@ export const useResizeEffect = (engine: Engine) => {
         // element.style.left = '0px'
         // element.style.top = '0px'
         element.style.transform = `translate3d(${rect.x}px,${rect.y}px,0)`
+        node.designerProps.resizable?.move?.(node, element, rect)
       })
     })
   })
@@ -90,9 +92,16 @@ export const useResizeEffect = (engine: Engine) => {
       dragNodes.forEach((node) => {
         const element = node.getElement()
         if (!element) return
-        node.designerProps.resizable?.width(node, element).resize()
-        node.designerProps.resizable?.height(node, element).resize()
+        node.designerProps.resizable?.end?.(node, element)
       })
+    }
+
+    const handler = findStartNodeHandler(event.data.target)
+    console.log(handler?.direction)
+    if (unsupportedDirections.includes(handler?.direction)) {
+      message.info('使用红色的按钮改变大小时组件的top、left定位会不准，请重新调整定位')
     }
   })
 }
+
+const unsupportedDirections = ['left-center', 'center-top', 'left-top', 'left-bottom', 'right-top']

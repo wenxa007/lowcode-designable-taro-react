@@ -66,8 +66,7 @@ export const useTranslateEffect = (engine: Engine) => {
         const element = node.getElement()
         if (!element) return
         element.style.transform = ''
-        node.designerProps.translatable?.x(node, dragNodesRect.x - dragStartNodesRect.x).translate()
-        node.designerProps.translatable?.y(node, dragNodesRect.y - dragStartNodesRect.y).translate()
+        node.designerProps.translatable?.end?.(node, dragNodesRect.x - dragStartNodesRect.x, dragNodesRect.y - dragStartNodesRect.y)
       })
     }
   })
