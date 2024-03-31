@@ -51,6 +51,7 @@ import {
   Form,
   FormPage,
   Image,
+  Icon,
   Input,
   InputNumber,
   Radio,
@@ -181,7 +182,7 @@ const App = () => {
               />
               <ResourceWidget
                 title="sources.Displays"
-                sources={[Button, Image, Text]}
+                sources={[Button, Icon, Image, Text]}
               />
               <ResourceWidget title="sources.Arrays" sources={[ArrayViews]} />
               <ResourceWidget
@@ -226,6 +227,7 @@ const App = () => {
                       Form,
                       FormPage,
                       Field,
+                      Icon,
                       Image,
                       Input,
                       InputNumber,

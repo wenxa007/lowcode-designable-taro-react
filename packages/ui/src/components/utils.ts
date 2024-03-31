@@ -7,7 +7,7 @@ import * as lodash from 'lodash-es'
 
 import ArrayBase from './ArrayBase'
 
-// --- 小工具
+// --- 小工具 start
 // lodash.throttle 在小程序里不能正常获得时间
 export function throttle(callback, wait = 600) {
   let start = 0
@@ -19,9 +19,10 @@ export function throttle(callback, wait = 600) {
     }
   }
 }
+// --- 小工具 end
 
-// --- 样式转化相关
-type transitionPxMode = 'rpx' | 'rem'
+// --- 样式转化相关 start
+type transitionToPxMode = 'rpx' | 'rem'
 const pxToRem = (str) => {
   const reg = /(\d+(\.\d*)?)+(px)/gi
   return String(str).replace(reg, function (x) {
@@ -29,21 +30,32 @@ const pxToRem = (str) => {
     return Taro.pxTransform(Number(val))
   })
 }
-function transitionPx(origin, mode: transitionPxMode = 'rem') {
-  for (const s in origin) {
-    if (typeof origin[s] !== 'string') {
-      continue
-    }
-    if (mode === 'rem') {
-      origin[s] = pxToRem(origin[s])
+export function transitionToPx(
+  origin,
+  mode?: transitionToPxMode | '',
+  keys?: string[],
+) {
+  if (!mode) {
+    if (process.env.TARO_ENV === 'h5') {
+      mode = 'rem'
     } else {
-      origin[s] = String(origin[s]).replace(/px/g, 'rpx')
+      mode = 'rpx'
     }
   }
+  const transitionKeys = Array.isArray(keys) ? keys : Object.keys(origin)
+  transitionKeys.forEach((s) => {
+    if (typeof origin[s] === 'string') {
+      if (mode === 'rem') {
+        origin[s] = pxToRem(origin[s])
+      } else {
+        origin[s] = String(origin[s]).replace(/px/g, 'rpx')
+      }
+    }
+  })
 }
 export function schemaTransitionPx(
   theSchema,
-  options?: { mode: transitionPxMode }
+  options?: { mode: transitionToPxMode },
 ) {
   // 处理designable导出的json中schema字段的style 从px转成rem或rpx
   if (theSchema.hasTransition) {
@@ -53,7 +65,7 @@ export function schemaTransitionPx(
     const componentOptions = theSchema.properties[i]
     const style = componentOptions?.['x-component-props']?.style
     if (style) {
-      transitionPx(style, options?.mode)
+      transitionToPx(style, options?.mode)
       // 如果有背景图片 backgroundSize 默认为 cover
       if (style.backgroundImage && !style.backgroundSize) {
         style.backgroundSize = 'cover'
@@ -61,11 +73,6 @@ export function schemaTransitionPx(
     }
     if (componentOptions.properties) {
       schemaTransitionPx(componentOptions)
-    }
-    // 处理自定义图标中的样式
-    const customIcon = componentOptions?.['x-component-props']?.customIcon
-    if (customIcon) {
-      transitionPx(customIcon, options?.mode)
     }
 
     // 遍历 Array类型字段
@@ -78,7 +85,7 @@ export function schemaTransitionPx(
 }
 export function formStyleTransitionPx(
   form,
-  options?: { mode: transitionPxMode }
+  options?: { mode: transitionToPxMode },
 ) {
   // 处理designable导出的json中form字段的style 从px转成rem或rpx
   if (form.hasTransition) {
@@ -86,15 +93,16 @@ export function formStyleTransitionPx(
   }
   const style = form.style || {}
   if (style) {
-    transitionPx(style, options?.mode)
+    transitionToPx(style, options?.mode)
     if (style.backgroundImage && !style.backgroundSize) {
       style.backgroundSize = 'cover'
     }
   }
   form.hasTransition = true
 }
+// --- 样式转化相关 end
 
-// --- Schema中JS表达式执行相关
+// --- Schema中JS表达式执行相关 start
 function baseCompiler(expression, scope, isStatement?) {
   if (isStatement) {
     new Function('$root', 'with($root) { '.concat(expression, '; }'))(scope)
@@ -102,7 +110,7 @@ function baseCompiler(expression, scope, isStatement?) {
   }
   return new Function(
     '$root',
-    'with($root) { return ('.concat(expression, '); }')
+    'with($root) { return ('.concat(expression, '); }'),
   )(scope)
 }
 function miniCompiler(expression, scope, isStatement?) {
@@ -132,8 +140,9 @@ export function formilyCompilerInMiniRegister() {
   Schema.registerCompiler(miniCompiler)
   shared.compiler = miniCompiler
 }
+// --- Schema中JS表达式执行相关 end
 
-// --- 事件系统相关
+// --- 事件系统相关 start
 const shared = {
   formilyStore: {
     Taro,
@@ -175,7 +184,7 @@ export function formilyStoreRunFunction(
     scope,
     path,
     propsOperatorsArray,
-    otherProps
+    otherProps,
   )
   let fn
   let callObject = null
@@ -255,7 +264,7 @@ export const formilyStoreEvent = function (
     scope,
     path || api,
     propsOperatorsArray,
-    ...otherProps
+    ...otherProps,
   )
 }
 export function useInPc() {
@@ -264,3 +273,4 @@ export function useInPc() {
 export function formilyStoreRegister(obj) {
   shared.formilyStore = obj
 }
+// --- 事件系统相关 end

@@ -71,21 +71,21 @@ export const imageDesignableConfig = {
       'x-decorator': 'FormItem',
       'x-component': 'Switch',
     },
-    width: {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-    },
-    height: {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-    },
-    // radius: {
+    // width: {
     //   type: 'string',
     //   'x-decorator': 'FormItem',
     //   'x-component': 'SizeInput',
     // },
+    // height: {
+    //   type: 'string',
+    //   'x-decorator': 'FormItem',
+    //   'x-component': 'SizeInput',
+    // },
+    radius: {
+      type: 'string',
+      'x-decorator': 'FormItem',
+      'x-component': 'SizeInput',
+    },
   },
 }
 
@@ -97,16 +97,21 @@ export const iconFontDesignableConfig = {
       'x-decorator': 'FormItem',
       'x-component': 'SizeInput',
     },
-    width: {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
+    useWidthAsSize: {
+        type: 'boolean',
+        'x-decorator': 'FormItem',
+        'x-component': 'Switch',
     },
-    height: {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-    },
+    // width: {
+    //   type: 'string',
+    //   'x-decorator': 'FormItem',
+    //   'x-component': 'SizeInput',
+    // },
+    // height: {
+    //   type: 'string',
+    //   'x-decorator': 'FormItem',
+    //   'x-component': 'SizeInput',
+    // },
     color: {
       type: 'string',
       'x-decorator': 'FormItem',
@@ -205,10 +210,11 @@ export const imageLocals = {
   radius: '圆角大小',
 }
 
-const iconFontLocals = {
+export const iconFontLocals = {
   iconName: '图标名称或图片链接',
   color: '图标颜色',
   size: '图标大小',
+  useWidthAsSize: '使用宽度作为size',
   width: '图标宽度',
   height: '图标高度',
   classPrefix: '类名前缀，用于使用自定义图标',

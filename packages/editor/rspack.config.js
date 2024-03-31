@@ -8,6 +8,7 @@ if (fs.existsSync('dist')) {
 }
 process.env.TARO_ENV = 'h5'
 process.env.TARO_PLATFORM = 'web'
+process.env.EDITOR = true
 
 /*
  * @type {import('@rspack/cli').Configuration}

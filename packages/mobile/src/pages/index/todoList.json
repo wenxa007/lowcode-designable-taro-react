@@ -165,7 +165,8 @@
         "x-component-props": {
           "style": {
             "position": "relative"
-          }
+          },
+          "eventsConfig": {}
         },
         "x-validator": [],
         "name": "list",
@@ -224,33 +225,21 @@
                 },
                 "956d01mudrx": {
                   "type": "void",
-                  "title": "Button",
-                  "x-component": "Button",
+                  "title": "Icon",
+                  "x-component": "Icon",
                   "x-component-props": {
-                    "children": "",
-                    "variant": "text",
-                    "color": "rgba(255,255,255,1)",
-                    "size": "large",
-                    "shape": "square",
-                    "customIcon": {
-                      "src": "",
-                      "width": "25px",
-                      "height": "20px",
-                      "mode": "aspectFit",
-                      "shape": "square",
-                      "useIcon": true,
-                      "icon": "Close"
-                    },
+                    "iconName": "check-disabled",
                     "style": {
                       "position": "absolute",
-                      "top": "16px",
+                      "top": "10px",
                       "left": "inherit",
                       "right": "44px",
-                      "width": "28px",
-                      "height": "28px",
-                      "fontSize": "28px",
+                      "width": "50px",
+                      "height": "40px",
+                      "fontSize": "40px",
                       "color": "rgba(184,63,69,1)",
-                      "backgroundColor": ""
+                      "backgroundColor": "",
+                      "border": "0"
                     },
                     "eventsConfig": {
                       "scriptClick": {
@@ -258,23 +247,8 @@
                           "console.log($index), $array.field.remove($index)"
                         ],
                         "api": "runStatement"
-                      }
-                    },
-                    "type": "default",
-                    "fill": "none",
-                    "rightIcon": {
-                      "imageProps": {
-                        "mode": "aspectFit",
-                        "style": {
-                          "position": "relative"
-                        }
                       },
-                      "iconFontProps": {
-                        "style": {
-                          "position": "relative"
-                        },
-                        "iconName": "check-disabled"
-                      }
+                      "scriptClose": {}
                     }
                   },
                   "x-designable-id": "956d01mudrx",
@@ -286,6 +260,6 @@
         }
       }
     },
-    "x-designable-id": "ufa33xpz4q8"
+    "x-designable-id": "sbiwn04ane0"
   }
 }

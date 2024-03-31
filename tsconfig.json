@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.build",
   "compilerOptions": {
-    "baseUrl": "./packages"
+    "baseUrl": "./packages",
+    "typeRoots": [
+      "node_modules/@types",
+    ]
   }
 }

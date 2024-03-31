@@ -15,6 +15,7 @@
 
 可视化设计器（体积很大，注意流量，最好用PC打开） <https://lowcode-designable-taro-react.vercel.app>
 demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-mobile.vercel.app>
+需要VPN
 
 ![editor](./showImage/editor.png)
 ![mobile](./showImage/mobile.png)

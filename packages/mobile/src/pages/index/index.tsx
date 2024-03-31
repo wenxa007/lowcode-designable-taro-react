@@ -14,11 +14,11 @@ import { initFormily } from '@/utils/formily'
 
 import './index.scss'
 
-import testJson from './input.json'
+import testJson from './todoList.json'
 
 initFormily()
 
-function transitionPx(designableJson) {
+function transitionStyle(designableJson) {
   schemaTransitionPx(designableJson.schema, { mode: 'rem' })
   formStyleTransitionPx(designableJson.form, { mode: 'rem' })
 }
@@ -45,7 +45,7 @@ export default () => {
       const temp = e[0]
     }
   }
-  transitionPx(designableJson)
+  transitionStyle(designableJson)
   console.log(designableJson)
 
   useEffect(() => {

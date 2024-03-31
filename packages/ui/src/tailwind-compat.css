@@ -178,6 +178,8 @@ textarea {
   color: inherit; /* 1 */
   margin: 0; /* 2 */
   padding: 0; /* 3 */
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /*

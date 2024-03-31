@@ -133,7 +133,8 @@
                 "x-validator": [],
                 "x-component-props": {
                   "style": {
-                    "position": "relative"
+                    "position": "relative",
+                    "height": "200px"
                   },
                   "eventsConfig": {}
                 },

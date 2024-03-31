@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image as Component } from 'ui-nutui-react-taro'
+import { Icon as Component } from 'ui-nutui-react-taro'
 
 import {
   createBehavior,
@@ -10,11 +10,11 @@ import { DnFC } from '@/designable/designable-react/src'
 import { AllLocales } from '../../locales'
 import { AllSchemas } from '../../schemas'
 import { createVoidFieldSchema } from '../Field'
-import { imageDesignableConfig, imageLocals } from '../shared'
+import { iconFontDesignableConfig, iconFontLocals } from '../shared'
 
-import image from '../../assets/image.png'
+import icon from '../../assets/icon.png'
 
-export const Image: DnFC<React.ComponentProps<typeof Component>> = (props) => {
+export const Icon: DnFC<React.ComponentProps<typeof Component>> = (props) => {
   return <Component {...props}></Component>
 }
 const propsSchema = createVoidFieldSchema({
@@ -26,13 +26,7 @@ const propsSchema = createVoidFieldSchema({
         'x-decorator': 'FormItem',
         'x-component': 'Switch',
       },
-      ...imageDesignableConfig.properties,
-      src: {
-        type: 'string',
-        'x-decorator': 'FormItem',
-        'x-component': 'Input',
-        default: `https://dummyimage.com/200x200/000/fff&text=static`,
-      },
+      ...iconFontDesignableConfig.properties
     },
   },
 }) as any
@@ -46,40 +40,42 @@ Object.entries(customStyles).forEach(
   (values) => (styleSchema[`style.${values[0]}`] = values[1])
 )
 
-Image.Behavior = createBehavior({
-  name: 'Image',
+Icon.Behavior = createBehavior({
+  name: 'Icon',
   extends: ['Field'],
-  selector: (node) => node.props['x-component'] === 'Image',
+  selector: (node) => node.props['x-component'] === 'Icon',
   designerProps: {
     propsSchema,
     defaultProps: {},
   },
   designerLocales: {
     'zh-CN': {
-      title: '图片',
+      title: 'Icon',
       settings: {
         'x-component-props': {
           useValue: '	使用表单字段值',
-          ...imageLocals,
+          ...iconFontLocals,
         },
       },
     },
   },
 })
 
-Image.Resource = createResource({
-  icon: image,
+Icon.Resource = createResource({
+  icon: icon,
   elements: [
     {
       componentName: 'Field',
       props: {
         type: 'string',
-        title: 'Image',
-        'x-component': 'Image',
+        title: 'Icon',
+        'x-component': 'Icon',
         'x-component-props': {
+          iconName: 'face-smile',
+          useWidthAsSize: true,
           style: {
-            width: '200px',
-            height: '200px',
+            width: '40px',
+            height: '40px',
           },
         },
       },

@@ -3,17 +3,36 @@ import { connect, mapProps, mapReadPretty, useForm } from '@formily/react'
 import { IconFont } from '@nutui/icons-react-taro'
 
 import { typePropsFields } from '../type'
+import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsFields &
   Parameters<typeof IconFont>[0] &
   Partial<{
     useValue: boolean // 使用表单中对应字段的值
     iconName: string // 在设计器中填入的静态值
+    useWidthAsSize: boolean // 使用宽度作为size
+    eventsConfig
   }>
 
 export const Icon = connect(
-  ({ useValue, value, iconName, ...props }: typeProps) => {
+  ({ useValue, value, iconName, useWidthAsSize, eventsConfig, ...props }: typeProps) => {
     const nameHandled = (useValue ? value : iconName) || ''
-    return <IconFont name={nameHandled} {...props}></IconFont>
-  }
+    if (useWidthAsSize) {
+      if (props.style?.width) {
+        props.size = props.style.width
+      }
+    }
+    const scope = useScope()
+    return (
+      <IconFont
+        name={nameHandled}
+        {...props}
+        onClick={(e) => {
+          if (eventsConfig?.scriptClick) {
+            formilyStoreEvent(scope, eventsConfig.scriptClick)
+          }
+        }}
+      ></IconFont>
+    )
+  },
 )
