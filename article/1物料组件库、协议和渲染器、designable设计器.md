@@ -444,6 +444,7 @@ export const SchemaField = createSchemaField({
 首先 `@tarojs/components` 使⽤了 `Stencil` 去实现了⼀个基于 `WebComponents` 且遵循微信⼩程序规范的组件库，用 `reactify-wc` 让React项目中能够使用 `WebComponent`，`stenciljs` 打包的组件产物中有 `defineCustomElements`，调用一下才可以把 `WebComponents` 注册到浏览器中
 ![taro-h5-webComponents](../showImage/taro-h5-webComponents.png)
 我们在设计器项目中需要把该方法导出来用一下，还需要引入Taro组件样式
+其余H5页面处理可以看 `node_modules/@tarojs/taro-loader/lib/h5.js`
 
 在设计器 `main.tsx` 中
 
@@ -455,8 +456,93 @@ defineCustomElements(window)
 
 接着webpack配置还要处理两个地方
 参考 `plugin-framework-react` 这个taro包中的处理
-
 在 'node_modules/@tarojs/plugin-framework-react/dist/index.js' 文件中，有个 `modifyH5WebpackChain` 方法来处理编译到H5时的webpack配置
+
+```js
+function modifyH5WebpackChain(ctx, framework, chain) {
+    var _a;
+    setLoader$1(framework, chain);
+    setPlugin(ctx, framework, chain);
+    const { isBuildNativeComp = false } = ((_a = ctx.runOpts) === null || _a === void 0 ? void 0 : _a.options) || {};
+    const externals = {};
+    if (isBuildNativeComp) {
+        // Note: 该模式不支持 prebundle 优化，不必再处理
+        externals.react = {
+            commonjs: 'react',
+            commonjs2: 'react',
+            amd: 'react',
+            root: 'React'
+        };
+        externals['react-dom'] = {
+            commonjs: 'react-dom',
+            commonjs2: 'react-dom',
+            amd: 'react-dom',
+            root: 'ReactDOM'
+        };
+        if (framework === 'preact') {
+            externals.preact = 'preact';
+        }
+        chain.merge({
+            externalsType: 'umd'
+        });
+    }
+    chain.merge({
+        externals,
+        module: {
+            rule: {
+                'process-import-taro-h5': {
+                    test: /taro-h5[\\/]dist[\\/]api[\\/]taro/,
+                    loader: require.resolve('./api-loader')
+                }
+            }
+        },
+    });
+    chain.merge({
+        externals,
+        module: {
+            rule: {
+                'process-import-taro-harmony-hybrid': {
+                    test: /plugin-platform-harmony-hybrid[\\/]dist[\\/]api[\\/]apis[\\/]taro/,
+                    loader: require.resolve('./api-loader')
+                }
+            }
+        },
+    });
+}
+function setLoader$1(framework, chain) {
+    function customizer(object = '', sources = '') {
+        if ([object, sources].every(e => typeof e === 'string'))
+            return object + sources;
+    }
+    chain.plugin('mainPlugin')
+        .tap(args => {
+        args[0].loaderMeta = lodash.mergeWith(getLoaderMeta(framework), args[0].loaderMeta, customizer);
+        return args;
+    });
+}
+function setPlugin(ctx, framework, chain) {
+    var _a, _b;
+    const config = ctx.initialConfig;
+    const webpackConfig = chain.toConfig();
+    const isProd = webpackConfig.mode === 'production';
+    if (!isProd && ((_b = (_a = config.h5) === null || _a === void 0 ? void 0 : _a.devServer) === null || _b === void 0 ? void 0 : _b.hot) !== false) {
+        // 默认开启 fast-refresh
+        if (framework === 'react') {
+            chain
+                .plugin('fastRefreshPlugin')
+                .use(require('@pmmmwh/react-refresh-webpack-plugin'));
+        }
+        else if (framework === 'preact') {
+            chain
+                .plugin('hotModuleReplacementPlugin')
+                .use(require('webpack').HotModuleReplacementPlugin);
+            chain
+                .plugin('fastRefreshPlugin')
+                .use(require('@prefresh/webpack'));
+        }
+    }
+}
+```
 
 ```ts
 export default {
