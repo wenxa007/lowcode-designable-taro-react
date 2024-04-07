@@ -7,6 +7,31 @@
 [协议驱动简单介绍](https://formilyjs.org/zh-CN/guide#%E5%8D%8F%E8%AE%AE%E9%A9%B1%E5%8A%A8)
 [Schema协议详细介绍](https://react.formilyjs.org/zh-CN/api/shared/schema)
 
+以todolist中每一项任务右边的删除按钮为示例
+
+```
+{
+  type: 'void', // 类型 void类型表单项就是没有关联表单数据
+  title: 'Icon', // 标题 一般标题用于显示在FormItem（x-decorator 字段 UI 包装器组件）
+  'x-component': 'Icon', // 字段 UI 组件
+  'x-component-props': { // 字段 UI 组件属性，就是业务组件Props能拿到的参数
+    iconName: 'check-disabled',
+    style: {}, // 组件样式
+    eventsConfig: { // 本项目实现的事件配置
+      scriptClick: { // 点击事件配置
+        propsOperatorsArray: [ // 事件函数入参
+          'console.log($index), $array.field.remove($index)',
+        ],
+        api: 'runStatement', // 事件要调用的api
+      },
+      scriptClose: {},
+    },
+  },
+  'x-designable-id': '956d01mudrx',
+  'x-index': 1,
+}
+```
+
 ## 组件库准备
 
 使用 `@nutui/nutui-react-taro`

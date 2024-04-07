@@ -124,15 +124,6 @@
               "color": "danger",
               "size": "medium",
               "shape": "circle",
-              "customIcon": {
-                "src": "",
-                "width": "25px",
-                "height": "20px",
-                "mode": "aspectFit",
-                "shape": "square",
-                "useIcon": false,
-                "icon": "Add"
-              },
               "style": {
                 "position": "relative",
                 "width": "130px",
