@@ -17,33 +17,37 @@ type typeProps = typePropsBase &
     eventsConfig
   }>
 
-export const Button = connect(
-  ({ leftIcon, rightIcon, children, eventsConfig, ...props }: typeProps) => {
-    const propNames = ['leftIcon', 'rightIcon']
-    const IconImageConfig = getIconImageConfig(propNames, {
-      leftIcon,
-      rightIcon,
-    })
-    if (IconImageConfig.leftIcon) {
-      IconImageConfig.icon = IconImageConfig.leftIcon
-      delete IconImageConfig.leftIcon
-    }
-
-    const scope = useScope()
-    return (
-      // @ts-ignore
-      <Component
-        {...props}
-        {...IconImageConfig}
-        onClick={(e) => {
-          e?.preventDefault()
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClick)
-          }
-        }}
-      >
-        {children}
-      </Component>
-    )
+export const Button = ({
+  leftIcon,
+  rightIcon,
+  children,
+  eventsConfig,
+  ...props
+}: typeProps) => {
+  const propNames = ['leftIcon', 'rightIcon']
+  const IconImageConfig = getIconImageConfig(propNames, {
+    leftIcon,
+    rightIcon,
+  })
+  if (IconImageConfig.leftIcon) {
+    IconImageConfig.icon = IconImageConfig.leftIcon
+    delete IconImageConfig.leftIcon
   }
-)
+
+  const scope = useScope()
+  return (
+    // @ts-ignore
+    <Component
+      {...props}
+      {...IconImageConfig}
+      onClick={(e) => {
+        e?.preventDefault()
+        if (eventsConfig?.scriptClick) {
+          formilyStoreEvent(scope, eventsConfig.scriptClick)
+        }
+      }}
+    >
+      {children}
+    </Component>
+  )
+}

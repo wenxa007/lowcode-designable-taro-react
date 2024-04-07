@@ -1,5 +1,4 @@
 import React from 'react'
-import { observer, useForm } from '@formily/react'
 import { View } from '@tarojs/components'
 
 import { typePropsBase } from '../type'
@@ -10,7 +9,7 @@ type typeProps = typePropsBase &
     eventsConfig
   }>
 
-export const WidgetBase = observer(({ children, eventsConfig, ...props }: typeProps) => {
+export const WidgetBase = ({ children, eventsConfig, ...props }: typeProps) => {
   const scope = useScope()
   return (
     <View
@@ -24,4 +23,4 @@ export const WidgetBase = observer(({ children, eventsConfig, ...props }: typePr
       {children}
     </View>
   )
-})
+}

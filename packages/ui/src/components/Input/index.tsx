@@ -17,6 +17,7 @@ import { getIconImageConfig, typeIconImageProps } from '../Icon/IconImage'
 
 export const Input = connect(
   ({ clearIcon, ...props }: typeProps) => {
+    // 图标配置封装
     const propNames = ['clearIcon']
     const IconImageConfig = getIconImageConfig(propNames, {
       clearIcon,

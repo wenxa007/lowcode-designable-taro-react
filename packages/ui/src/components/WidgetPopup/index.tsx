@@ -11,25 +11,27 @@ type typeProps = typePropsBase &
     eventsConfig
   }>
 
-export const WidgetPopup = observer(
-  ({ children, eventsConfig, ...props }: typeProps) => {
-    const scope = useScope()
-    return (
-      <Popup
-        {...props}
-        onClick={(e) => {
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClick)
-          }
-        }}
-        onClose={() => {
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClose)
-          }
-        }}
-      >
-        {children}
-      </Popup>
-    )
-  }
-)
+export const WidgetPopup = ({
+  children,
+  eventsConfig,
+  ...props
+}: typeProps) => {
+  const scope = useScope()
+  return (
+    <Popup
+      {...props}
+      onClick={(e) => {
+        if (eventsConfig?.scriptClick) {
+          formilyStoreEvent(scope, eventsConfig.scriptClick)
+        }
+      }}
+      onClose={() => {
+        if (eventsConfig?.scriptClick) {
+          formilyStoreEvent(scope, eventsConfig.scriptClose)
+        }
+      }}
+    >
+      {children}
+    </Popup>
+  )
+}

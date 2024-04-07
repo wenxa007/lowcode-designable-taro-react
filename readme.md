@@ -1,15 +1,11 @@
 # 基于 Designable 开发 Taro小程序前端页面可视化搭建工具
 
-这个分支还没做好 可以先看旧版taro3.6分支
-
 ## 目录介绍
 
-```
 ├─ packages
-  ├─ editor: 页面可视化搭建设计器，使用rspack构建并做了兼容Taro组件H5渲染处理
+  ├─ editor: 基于 `Designable` + `Formily.js` 实现的页面可视化搭建设计器，使用 `rspack` 构建，并做了兼容Taro组件H5渲染处理
   ├─ mobile: Taro项目demo例子
-  ├─ ui: 使用@nutui/nutui-react-taro组件库做的适配formily的组件
-```
+  ├─ ui: 使用 `@nutui/nutui-react-taro` 组件库做的适配formily的组件
 
 ## 预览地址
 
@@ -77,8 +73,16 @@ npm start
 
 目前组件比较少，如有需要上生产建议按自身业务搭一套
 
-[0前端可视化搭建与designable](./article/0%E5%89%8D%E7%AB%AF%E5%8F%AF%E8%A7%86%E5%8C%96%E6%90%AD%E5%BB%BA%E4%B8%8Edesignable.md)
-[1物料组件库、协议和渲染器、designable设计器](./article/1%E7%89%A9%E6%96%99%E7%BB%84%E4%BB%B6%E5%BA%93%E3%80%81%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%B8%B2%E6%9F%93%E5%99%A8%E3%80%81designable%E8%AE%BE%E8%AE%A1%E5%99%A8.md)
-[2Taro小程序H5渲染JSONSchema](./article/2Taro%E5%B0%8F%E7%A8%8B%E5%BA%8FH5%E6%B8%B2%E6%9F%93JSONSchema.md)
-3事件系统(开坑中)
-4数组组件(开坑中)
+> - 低代码入门介绍
+> - [低代码渲染那些事](https://zhuanlan.zhihu.com/p/540339437)
+> - [从实现原理看低代码](https://zhuanlan.zhihu.com/p/451340998)
+
+> - Formily.js 表单解决方案
+> - [Formily.js官网](https://formilyjs.org/zh-CN/guide/learn-formily)
+> - [Formily学习笔记](https://github.com/cgfeel/formily)
+
+> - [alibaba/designable](https://github.com/alibaba/designable)
+> - 跟Formily.js是同一个作者，目前不维护了，这个fork [@pind/designable](https://github.com/pindjs/designable) 功能更新一点
+> - 没有文档，可以看一些非官方文章或视频教程
+> - [表单设计器开发指南](https://formilyjs.org/zh-CN/guide/form-builder)
+> - [Designable 应用和源码浅析](https://zhuanlan.zhihu.com/p/431263711)

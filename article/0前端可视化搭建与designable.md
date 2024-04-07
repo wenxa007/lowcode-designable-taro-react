@@ -1,14 +1,6 @@
-# 基于 Designable 开发 Taro 小程序低代码玩具系统(0) - 前端可视化搭建与designable
+# 前端可视化搭建与designable
 
-## 预览地址
-
-[Github](https://github.com/weilaiqishi/lowcode-designable-taro-react.git)
-
-可视化设计器（体积很大，注意流量，最好用PC打开） <https://lowcode-designable-taro-react.vercel.app>
-demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-mobile.vercel.app>
-
-![editor](../showImage/editor.png)
-![mobile](../showImage/mobile.png)
+已下内容可以结合 https://github.com/pindjs/designable，跑 formily/antd 目录下的 start 命令启动
 
 ## designable介绍
 
@@ -16,24 +8,6 @@ demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-m
 
 如上 `designable` [开源库作者](https://www.zhihu.com/question/458478254/answer/1978603907)所述，`designable` 是一个设计器引擎，提供拖拽搭建能力。
 我们可以用它来往上层封装出具体产品，比如表单设计器、低代码平台。
-
-formily表单设计器，就是基于designable扩展出来的。
-[这是预览地址](https://designable-antd.formilyjs.org/)， 颜值非常得高
-![designable-antd-empty](../showImage/designable-antd-empty.png)
-![img/designable-antd-userform](../showImage/designable-antd-userform.png)
-
-平时我的工作任务主要小程序开发，接下来文章会去介绍怎么开发 **Taro小程序前端页面可视化搭建工具**
-
-> - 目前 designable 不维护了，这个fork @pind/designable 功能更新一点
-> - 没有文档，可以看一些非官方文章或视频教程
-> - [表单设计器开发指南](https://formilyjs.org/zh-CN/guide/form-builder)
-> - [「表单设计器开发指南」的内容补充*](https://www.yuque.com/xjchenhao/development/gt1k7i)
-> - [Designable 应用和源码浅析](https://zhuanlan.zhihu.com/p/431263711)
-> - [Formily实践（1.x）](https://zhuanlan.zhihu.com/p/142237587)
-> - [formily+vue3 组件桥接和具名插槽使用的两种方法](https://www.bilibili.com/video/BV1nT41137fz?p=1&share_medium=iphone&share_plat=ios&share_session_id=02D5C73F-30C0-49D5-A9DF-DC3154E7392E&share_source=COPY&share_tag=s_i&timestamp=1656643643&unique_k=WKpUj83&vd_source=f7755c17614e213e2d79a4ab2d1a8de8)
-> - 低代码入门介绍
-> - [低代码渲染那些事](https://zhuanlan.zhihu.com/p/540339437)
-> - [从实现原理看低代码](https://zhuanlan.zhihu.com/p/451340998)
 
 ## 前端页面可视化搭建与低代码
 

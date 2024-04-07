@@ -1,56 +1,37 @@
-# 基于 Designable 开发 Taro 小程序低代码玩具系统(1) - 物料组件库与designable可视化搭建器
+# 物料组件库、协议和渲染器、designable设计器
 
-开搞开搞
+## 协议驱动
 
-## 预览地址
+本项目的H5和小程序动态渲染最核心的依赖是 `Formily.js` 的 `JSON Schema` 渲染能力
+先可看官方文档
+[协议驱动简单介绍](https://formilyjs.org/zh-CN/guide#%E5%8D%8F%E8%AE%AE%E9%A9%B1%E5%8A%A8)
+[Schema协议详细介绍](https://react.formilyjs.org/zh-CN/api/shared/schema)
 
-[Github](https://github.com/weilaiqishi/lowcode-designable-taro-react.git)
+## 组件库准备
 
-可视化设计器（体积很大，注意流量，最好用PC打开） <https://lowcode-designable-taro-react.vercel.app>
-demo H5（按 F12 切换设备仿真） <https://lowcode-designable-taro-react-mobile.vercel.app>
+使用 `@nutui/nutui-react-taro`
+https://nutui.jd.com/taro/react/2x/#/zh-CN/guide/intro-react
 
-![editor](../showImage/editor.png)
-![mobile](../showImage/mobile.png)
+### Formily组件编写
 
-## 组件库准备 taroify-formily
+可参考 `ui/src/components` 目录
 
-我们需要挑一个称手的Taro组件库
+Formily 的字段模型核心包含了两类字段模型：数据型字段和虚数据型字段
+数据型字段(Field)，核心是负责维护表单数据(表单提交时候的值)。
+虚数据型字段(VoidField)，你可以理解为它就是一个阉割了数据维护能力的 Field，所以它更多的是作为容器维护一批字段的 UI 形式。
+[字段模型](https://core.formilyjs.org/zh-CN/guide/field)
 
-目前京东出的组件库中 `taro-ui` 没什么更新了，`NutUI`只支持 Vue 不支持 React，所以选择了个人开发的 `taroify`，由于是从 `vant` 改来的，所以颜值也比较高，[文档地址](https://taroify.gitee.io/taroify.com/introduce/)
+那在 `ui/src/components` 目录中，Widget开头的组件和Button是VoidField，只用来展示UI的，不跟表单数据做关联，
+其余的像 CheckBox、DatePicker、Input组件是跟表单数据做关联的，用 `@formily/react` 中的 `connect`, `mapProps` 方法包装组件来连接表单，最基础的数据型组件要求Props有 `value` 和 `onChange`
 
 ### Form组件
 
 Form组件是地基，接收一个Form实例，渲染children内容。
-`@formily/antd` 中一个简单的示例如下
+本项目里 packages/ui/src/components里面 实现了Form组件和FormPage组件，
+FormPage组件除了formily提供的能力外就是一个Taro的View组件，
+Form组件则多了nutui Form组件的样式
 
-```tsx
-import React from 'react'
-import { Input,Form,FormItem,Submit, } from '@formily/antd'
-import { createForm } from '@formily/core'
-import { Field } from '@formily/react'
-
-const form = createForm()
-
-export default () => (
-  <Form
-    form={form}
-    layout="vertical"
-    feedbackLayout="terse"
-    onAutoSubmit={console.log}
-    onAutoSubmitFailed={console.log}
-  >
-      <Field
-        name="bb"
-        title="输入框"
-        required
-        decorator={[FormItem]}
-        component={[Input]}
-      />
-  </Form>
-)
-```
-
-根据 `@formily/antd` 的代码，照猫画虎出属于我们的Form组件，除了formily提供的能力外就是一个Taro的View组件
+FormPage组件代码如下
 
 ```tsx
 import React, { createContext, useContext } from 'react'
@@ -61,13 +42,11 @@ import {
   JSXComponent,
   useParentForm,
 } from '@formily/react'
-import { View as TaroView } from '@tarojs/components'
+import { View } from '@tarojs/components'
 
 import { PreviewText } from '../PreviewText'
 
-const View: any = TaroView // 这是为了处理类型报错，请不要在意
-
-export interface IFormLayoutProps {
+export interface IFormPageProps {
   form?: FormType
   component?: JSXComponent
   previewTextPlaceholder?: React.ReactNode
@@ -75,15 +54,15 @@ export interface IFormLayoutProps {
   style?: React.CSSProperties
 }
 
-export const Form: React.FC<React.PropsWithChildren<IFormLayoutProps>> = ({
+export const FormPage: React.FC<React.PropsWithChildren<IFormPageProps>> = ({
   form,
   component,
   previewTextPlaceholder,
   className,
   style,
-  children
+  children,
 }) => {
-  const top = useParentForm() // 获取父表单 现在并不重要
+  const top = useParentForm()
   // 重要的是这里 我们的Form组件就简单的用Taro的View组件包住子组件渲染
   // ExpressionScope是用context来给 json-schema 表达式传递局部作用域，我们可以用它当做数据源
   // PreviewText.Placeholder也是一个context 给预览态显示文本一个缺省值，目前也不重要
@@ -97,272 +76,23 @@ export const Form: React.FC<React.PropsWithChildren<IFormLayoutProps>> = ({
     </ExpressionScope>
   )
   if (form)
-    // 最重要的是这里，有FormProvider才能提供MVVM能力，进行微操 
+    // 最重要的是这里，有FormProvider才能提供MVVM能力，进行微操
     return <FormProvider form={form}>{renderContent(form)}</FormProvider>
   if (!top) throw new Error('must pass form instance by createForm')
   return renderContent(top)
 }
 
-Form.defaultProps = {
-  component: 'form',
-}
-
-export default Form
+export default FormPage
 ```
 
 ### FormItem
 
-`taroify` 提供了一些表单组件
-![taroifyui-FormItem](../showImage/taroifyui-FormItem.png)
+`nutui` 提供了一些表单组件
+![nutui-FormItem](../showImage/nutui-FormItem.png)
 
 如图所见FormItem的作用就是显示label、必填、校验文案等，并且让表单布局更加美观，我们需要混入Formily能力。
-
-首先介绍 `pickDataProps` 方法，这个方法主要挑选出 `@pind/designable-react` `ComponentTreeWidget` 渲染器给的属性，在设计器中这些属性挂在dom上才能点击选中、拖拉拽。
-
-```ts
-export const pickDataProps = (props: any = {}) => {
-  const results = {}
-
-  for (const key in props) {
-    if (key.indexOf('data-') > -1) {
-      results[key] = props[key]
-    }
-  }
-
-  return results
-}
-```
-
-接着我们改造一下FormItem的最外层，要让designable属性能够挂到dom上，并且阉割掉原来UI库有关Form的功能，化为己用。
-`<CellBase {...pickDataProps(_props)}` 这段代码就是处理designable属性的
-
-```tsx
-// fork for supporting designable props
-
-import * as React from 'react'
-import {
-  Children,
-  isValidElement,
-  ReactElement,
-  ReactNode,
-  useMemo,
-} from 'react'
-import { CellBase, CellProps, CellValue } from '@taroify/core/cell'
-import Form from '@taroify/core/form'
-import { prefixClassname } from '@taroify/core/styles'
-import { isElementOf } from '@taroify/core/utils/validate'
-import { cloneIconElement } from '@taroify/icons/utils'
-import { View as _View } from '@tarojs/components'
-import { InputProps } from '@tarojs/components/types/Input'
-import classNames from 'classnames'
-import * as _ from 'lodash'
-
-import { pickDataProps } from '../components/__builtins__'
-
-const View: any = _View
-export interface FormItemProps extends CellProps {
-  name?: string
-  defaultValue?: any
-  required?: boolean
-  children?: ReactNode
-}
-
-interface FormItemChildren {
-  label?: ReactElement
-  control?: ReactElement
-  feedbacks?: ReactElement[]
-}
-
-function useFormItemChildren(children?: ReactNode): FormItemChildren {
-  return useMemo<FormItemChildren>(() => {
-    const __children__: FormItemChildren = {
-      feedbacks: [],
-    }
-
-    Children.forEach(children, (child: ReactNode) => {
-      if (!isValidElement(child)) {
-        return
-      }
-
-      const element = child as ReactElement
-      const { type: elementType } = element as ReactElement<InputProps>
-      if (isElementOf(element, Form.Label)) {
-        __children__.label = element
-      } else if (elementType === Form.Control) {
-        __children__.control = element
-      } else if (isElementOf(element, Form.Feedback)) {
-        __children__.feedbacks?.push(element)
-      }
-    })
-    return __children__
-  }, [children])
-}
-
-const FormItem = (props: FormItemProps) => {
-  const {
-    className,
-    style,
-    name,
-    defaultValue,
-    align,
-    bordered,
-    icon,
-    rightIcon,
-    clickable,
-    required,
-    children: childrenProp,
-    onClick,
-    ..._props
-  } = props
-
-  const { label, control, feedbacks } = useFormItemChildren(childrenProp)
-
-  const explain = useMemo(
-    () => !_.isEmpty(feedbacks),
-    [feedbacks]
-  )
-
-  return (
-    <CellBase
-      {...pickDataProps(_props)}
-      className={classNames(prefixClassname('form-item'), className)}
-      style={style}
-      bordered={bordered}
-      align={align}
-      clickable={clickable}
-      icon={cloneIconElement(icon, {
-        className: prefixClassname('form-item__icon'),
-      })}
-      rightIcon={cloneIconElement(rightIcon, {
-        className: prefixClassname('form-item__right-icon'),
-      })}
-      required={required}
-      onClick={onClick}
-    >
-      {label}
-      <CellValue alone={false}>
-        {control}
-        {explain && (
-          <View className={classNames(prefixClassname('form__feedbacks'))}>
-            {feedbacks}
-          </View>
-        )}
-      </CellValue>
-    </CellBase>
-  )
-}
-
-export default FormItem
-
-```
-
-最后封装出我们自己的 `FormItem`，让它可以只根据最外层的props就能发挥出最大功能。这里我们先提供简单的对齐方式配置、冒号配置，同时我们需要用 `mapProps` 去映射校验文案字段。
-
-```tsx
-/* eslint-disable react/no-children-prop */
-import React from 'react'
-import { GeneralField, isVoidField } from '@formily/core'
-import { connect, mapProps } from '@formily/react'
-import { Field, Form } from '@taroify/core'
-import { createVariantElement } from '@taroify/core/utils/element'
-import { View as TaroView } from '@tarojs/components'
-import classNames from 'classnames'
-
-import FormItemBase from '../../ui/form-item'
-import { pickDataProps } from '../__builtins__'
-
-const View: any = TaroView
-
-export interface IFormItemProps {
-  className?: string
-  style?: React.CSSProperties
-  field: GeneralField
-  colon: boolean // 是否有冒号
-  labelAlign?: 'left' | 'center' | 'right' // label对齐方式
-  wrapperAlign?: 'left' | 'center' | 'right' // 组件对齐方式
-  feedbackStatus?: 'error' | 'warning' | 'success' | 'pending'
-  [propName: string]: any
-}
-
-export const BaseItem: React.FC<React.PropsWithChildren<IFormItemProps>> = ({
-  className,
-  style,
-  children,
-  field,
-  colon = true,
-  labelAlign = 'left',
-  wrapperAlign = 'left',
-  feedbackStatus,
-  feedbackText,
-  ...props
-}) => {
-  const required =
-    !isVoidField(field) && field.required && field.pattern !== 'readPretty'
-  return (
-    <FormItemBase
-      required={required}
-      bordered
-      className={className}
-      style={style}
-      {...pickDataProps(props)}
-    >
-      <Form.Label align={labelAlign} colon={colon}>
-        {field.title}
-      </Form.Label>
-      {children && <Form.Control children={children} align={wrapperAlign} />}
-      {feedbackStatus !== 'pending' && (
-        <Form.Feedback
-          status={
-            feedbackStatus === 'success'
-              ? 'valid'
-              : feedbackStatus === 'error'
-                ? 'invalid'
-                : 'warning'
-          }
-        >
-          {feedbackText}
-        </Form.Feedback>
-      )}
-    </FormItemBase>
-  )
-}
-
-export const FormItem = connect(
-  BaseItem,
-  mapProps((props, field) => {
-    if (isVoidField(field))
-      return {
-        ...props,
-        field,
-      }
-    const takeFeedbackStatus = () => {
-      if (field.validating) return 'pending'
-      return field.decoratorProps.feedbackStatus || field.validateStatus
-    }
-    const takeMessage = () => {
-      const split = (messages: any[]) => {
-        return messages.reduce((buf, text, index) => {
-          if (!text) return buf
-          return index < messages.length - 1
-            ? buf.concat([text, ', '])
-            : buf.concat([text])
-        }, [])
-      }
-      if (field.validating) return
-      if (props.feedbackText) return props.feedbackText
-      if (field.selfErrors.length) return split(field.selfErrors)
-      if (field.selfWarnings.length) return split(field.selfWarnings)
-      if (field.selfSuccesses.length) return split(field.selfSuccesses)
-    }
-    return {
-      ...props,
-      field,
-      feedbackStatus: takeFeedbackStatus(),
-      feedbackText: takeMessage(),
-    }
-  })
-)
-```
+我们要改造一下FormItem的最外层，要让designable属性能够挂到dom上，并且阉割掉原来UI库有关Form的功能，化为己用。
+用 `@formily/react` 的 `connect`，`mapProps` 来让FormItem组件可以链接到表单
 
 ### Input
 
