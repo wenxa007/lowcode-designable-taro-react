@@ -3,7 +3,6 @@ import { connect, mapProps, mapReadPretty, useForm } from '@formily/react'
 import { IconFont } from '@nutui/icons-react-taro'
 
 import { typePropsFields } from '../type'
-import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsFields &
   Parameters<typeof IconFont>[0] &
@@ -22,15 +21,13 @@ export const Icon = connect(
         props.size = props.style.width
       }
     }
-    const scope = useScope()
     return (
       <IconFont
         name={nameHandled}
         {...props}
         onClick={(e) => {
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClick)
-          }
+          e?.preventDefault()
+          eventsConfig?.scriptClick?.()
         }}
       ></IconFont>
     )

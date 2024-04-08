@@ -7,7 +7,6 @@ import { Block } from '@tarojs/components'
 
 import { getIconImageConfig, typeIconImageProps } from '../Icon/IconImage'
 import { typePropsBase } from '../type'
-import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsBase &
   ButtonProps &
@@ -34,7 +33,6 @@ export const Button = ({
     delete IconImageConfig.leftIcon
   }
 
-  const scope = useScope()
   return (
     // @ts-ignore
     <Component
@@ -42,9 +40,7 @@ export const Button = ({
       {...IconImageConfig}
       onClick={(e) => {
         e?.preventDefault()
-        if (eventsConfig?.scriptClick) {
-          formilyStoreEvent(scope, eventsConfig.scriptClick)
-        }
+        eventsConfig?.scriptClick?.()
       }}
     >
       {children}

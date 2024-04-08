@@ -3,7 +3,6 @@ import { observer, useForm } from '@formily/react'
 import { Cell, CellProps } from '@nutui/nutui-react-taro'
 
 import { typePropsBase } from '../type'
-import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsBase & CellProps &
   Partial<{
@@ -16,14 +15,12 @@ export const WidgetCell = observer(
     eventsConfig,
     ...props
   }: typeProps) => {
-    const scope = useScope()
     return (
       <Cell
         {...props}
         onClick={(e) => {
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClick)
-          }
+          e?.preventDefault()
+          eventsConfig?.scriptClick?.()
         }}
       >
         {children}

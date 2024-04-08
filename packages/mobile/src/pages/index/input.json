@@ -264,10 +264,7 @@
                   "style": {
                     "position": "relative"
                   },
-                  "eventsConfig": {
-                    "scriptClick": {},
-                    "scriptClose": {}
-                  }
+                  "eventsConfig": {}
                 },
                 "x-designable-id": "1xyi4y2n3qu",
                 "x-index": 6,
@@ -289,12 +286,7 @@
                       "size": "large",
                       "fill": "",
                       "eventsConfig": {
-                        "scriptClick": {
-                          "propsOperatorsArray": [
-                            "$form.submit()"
-                          ],
-                          "api": "runStatement"
-                        }
+                        "scriptClick": "{{() => $form.submit()}}"
                       }
                     },
                     "x-designable-id": "l8izj4ecta6",
@@ -488,12 +480,7 @@
                       "size": "large",
                       "fill": "",
                       "eventsConfig": {
-                        "scriptClick": {
-                          "propsOperatorsArray": [
-                            "$form.submit()"
-                          ],
-                          "api": "runStatement"
-                        }
+                        "scriptClick": "{{() => $form.submit()}}"
                       }
                     },
                     "x-designable-id": "kocpw514j6j",

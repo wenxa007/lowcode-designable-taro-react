@@ -1,4 +1,3 @@
-import { Schema } from '@formily/json-schema'
 import { useField } from '@formily/react'
 import { autorun, observable, untracked } from '@formily/reactive'
 import vm from '@kimeng/vm/src/vm'
@@ -103,17 +102,17 @@ export function formStyleTransitionPx(
 // --- 样式转化相关 end
 
 // --- Schema中JS表达式执行相关 start
-function baseCompiler(expression, scope, isStatement?) {
-  if (isStatement) {
-    new Function('$root', 'with($root) { '.concat(expression, '; }'))(scope)
-    return
-  }
-  return new Function(
-    '$root',
-    'with($root) { return ('.concat(expression, '); }'),
-  )(scope)
-}
-function miniCompiler(expression, scope, isStatement?) {
+// export function baseCompiler(expression, scope, isStatement?) {
+//   if (isStatement) {
+//     new Function('$root', 'with($root) { '.concat(expression, '; }'))(scope)
+//     return
+//   }
+//   return new Function(
+//     '$root',
+//     'with($root) { return ('.concat(expression, '); }'),
+//   )(scope)
+// }
+export function miniCompiler(expression, scope, isStatement?) {
   if (scope === void 0) {
     scope = {}
   }
@@ -135,142 +134,4 @@ function miniCompiler(expression, scope, isStatement?) {
   }
   return bridge.current
 }
-export function formilyCompilerInMiniRegister() {
-  // json-schema注册兼容小程序的解析器
-  Schema.registerCompiler(miniCompiler)
-  shared.compiler = miniCompiler
-}
 // --- Schema中JS表达式执行相关 end
-
-// --- 事件系统相关 start
-const shared = {
-  formilyStore: {
-    Taro,
-  },
-  PC: false,
-  compiler: baseCompiler,
-}
-type typeScope = Partial<{
-  $dependencies
-  $deps
-  $effect
-  $form
-  $memo
-  $observable
-  $props
-  $self
-  $target
-  $values
-
-  // Array组件里才有
-  $array
-  $index
-  $record
-}>
-export type typeEventItem = {
-  api: string
-  path: string
-  propsOperatorsArray: any[]
-}
-export function formilyStoreRunFunction(
-  scope: typeScope,
-  path,
-  propsOperatorsArray,
-  ...otherProps
-) {
-  console.log(
-    'formilyStoreRunFunction -> formilyStore scope path propsOperatorsArray otherProps -> ',
-    shared.formilyStore,
-    scope,
-    path,
-    propsOperatorsArray,
-    otherProps,
-  )
-  let fn
-  let callObject = null
-
-  // 自定义JS语句执行
-  if (path === 'runStatement') {
-    const expression = propsOperatorsArray[0]
-    if (expression) {
-      shared.compiler(expression, scope, true)
-    }
-    return
-  }
-
-  // formily和注册方法执行
-  if (path.includes('$form')) {
-    // 从$form上获取方法
-    const formFnPath = path.split('.')[1]
-    fn = lodash.get(scope.$form, formFnPath)
-    callObject = scope.$form
-  } else {
-    // 从全局formilyStore获取方法
-    fn = lodash.get(shared.formilyStore, path)
-    try {
-      const segments = String(path || '').split('.')
-      segments.pop()
-      callObject = lodash.get(shared.formilyStore, segments.join())
-    } catch (err) {
-      console.log('formilyStoreRunFunction -> getCallObject err -> ', err)
-    }
-  }
-  let propsArray: any[] = []
-  try {
-    propsArray = propsOperatorsArray.map((expression) => {
-      return shared.compiler(expression, scope)
-    })
-  } catch (err) {
-    console.log('formilyStoreRunFunction -> parsePropsJSON err -> ', err)
-  }
-
-  if (typeof fn === 'function') {
-    callObject
-      ? fn.call(callObject, ...propsArray, ...otherProps)
-      : fn(...propsArray, ...otherProps)
-  }
-}
-
-export function useScope() {
-  const field = useField()
-  const $array = ArrayBase.useArray?.()
-  const $index = ArrayBase.useIndex?.()
-  const $record = ArrayBase.useRecord?.()
-  const scope = {
-    $self: field,
-    $form: field.form,
-    $values: field.form.values,
-    $observable: (target: any, deps?: any[]) =>
-      autorun.memo(() => observable(target), deps),
-    $effect: (props: any) => field.setComponentProps(props),
-    $memo: autorun.memo,
-    $props: (props: any) => field.setComponentProps(props),
-    $array,
-    $index,
-    $record,
-  }
-  return scope
-}
-export const formilyStoreEvent = function (
-  scope: typeScope,
-  eventItem: typeEventItem,
-  ...otherProps
-) {
-  const { api, path, propsOperatorsArray } = eventItem
-  if (!api && !path) {
-    return
-  }
-  formilyStoreRunFunction(
-    scope,
-    path || api,
-    propsOperatorsArray,
-    ...otherProps,
-  )
-}
-export function useInPc() {
-  shared.PC = true
-}
-export function formilyStoreRegister(obj) {
-  shared.formilyStore = obj
-}
-// --- 事件系统相关 end

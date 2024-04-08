@@ -35,6 +35,9 @@ const propsSchema = createVoidFieldSchema({
       },
     },
   },
+  props: {
+    'component-events-group': ['scriptClick'],
+  },
 }) as any
 
 const customStyles = {}

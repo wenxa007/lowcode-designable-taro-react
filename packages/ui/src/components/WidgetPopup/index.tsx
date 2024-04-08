@@ -3,7 +3,6 @@ import { observer, useForm } from '@formily/react'
 import { Popup, PopupProps } from '@nutui/nutui-react-taro'
 
 import { typePropsBase } from '../type'
-import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsBase &
   PopupProps &
@@ -16,19 +15,15 @@ export const WidgetPopup = ({
   eventsConfig,
   ...props
 }: typeProps) => {
-  const scope = useScope()
   return (
     <Popup
       {...props}
       onClick={(e) => {
-        if (eventsConfig?.scriptClick) {
-          formilyStoreEvent(scope, eventsConfig.scriptClick)
-        }
+        e?.preventDefault()
+        eventsConfig?.scriptClick?.()
       }}
       onClose={() => {
-        if (eventsConfig?.scriptClick) {
-          formilyStoreEvent(scope, eventsConfig.scriptClose)
-        }
+        eventsConfig?.scriptClose?.()
       }}
     >
       {children}

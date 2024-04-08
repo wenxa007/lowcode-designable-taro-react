@@ -33,7 +33,6 @@ import {
 
 import testJson from '../../mobile/src/pages/index/input.json'
 import todoList from '../../mobile/src/pages/index/todoList.json'
-import { formilyStoreRegister } from '../../ui/src'
 import {
   ArrayViews,
   Button,
@@ -80,23 +79,6 @@ GlobalRegistry.registerDesignerLocales({
   },
 })
 GlobalRegistry.setDesignerLanguage('zh-cn')
-
-// 注册formily自定义组件全局数据源
-formilyStoreRegister({
-  Taro: {
-    ...Taro,
-    // 注册一些 PC Taro上没有的方法
-    showToast(arg) {
-      const { title = '', duration = 2 } = arg || {}
-      message.info('(PC临时工)' + title, duration)
-      // {"title": JSON.stringify($form.values)}
-    },
-    showModal(arg) {
-      const { content = '', duration = 2 } = arg || {}
-      message.info('(PC临时工)' + content, duration)
-    },
-  },
-})
 
 const Logo: React.FC = () => (
   <div style={{ display: 'flex', alignItems: 'center', fontSize: 14 }}>

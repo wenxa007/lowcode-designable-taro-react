@@ -37,10 +37,7 @@
             "alignItems": "center",
             "justifyContent": "center"
           },
-          "eventsConfig": {
-            "scriptClick": {},
-            "scriptClose": {}
-          }
+          "eventsConfig": {}
         },
         "x-designable-id": "as8dgcohtb9",
         "x-index": 0,
@@ -84,10 +81,7 @@
             "justifyContent": "center",
             "alignItems": "center"
           },
-          "eventsConfig": {
-            "scriptClick": {},
-            "scriptClose": {}
-          }
+          "eventsConfig": {}
         },
         "x-designable-id": "atb7djrlxr0",
         "x-index": 1,
@@ -135,12 +129,7 @@
                 "backgroundColor": "rgba(184,63,69,1)"
               },
               "eventsConfig": {
-                "scriptClick": {
-                  "propsOperatorsArray": [
-                    "$form.fields.list.unshift({\nitemKey1:$form.values.inputValue\n})"
-                  ],
-                  "api": "runStatement"
-                }
+                "scriptClick": "{{ () => { $form.fields.list.unshift({\nitemKey1:$form.values.inputValue\n})} }}"
               },
               "type": "primary",
               "fill": ""
@@ -186,10 +175,7 @@
                   "alignItems": "center",
                   "justifyContent": "center"
                 },
-                "eventsConfig": {
-                  "scriptClick": {},
-                  "scriptClose": {}
-                }
+                "eventsConfig": {}
               },
               "x-designable-id": "c9osxcqqez7",
               "x-index": 0,
@@ -233,13 +219,7 @@
                       "border": "0"
                     },
                     "eventsConfig": {
-                      "scriptClick": {
-                        "propsOperatorsArray": [
-                          "console.log($index), $array.field.remove($index)"
-                        ],
-                        "api": "runStatement"
-                      },
-                      "scriptClose": {}
+                      "scriptClick": "{{ () => { console.log($index, $array); $array.remove($index)} }}"
                     }
                   },
                   "x-designable-id": "956d01mudrx",

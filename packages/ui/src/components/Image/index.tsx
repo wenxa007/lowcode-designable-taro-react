@@ -4,7 +4,6 @@ import { Image as Component } from '@nutui/nutui-react-taro'
 import { ImageProps } from '@nutui/nutui-react-taro/dist/types/index'
 
 import { typePropsFields } from '../type'
-import { formilyStoreEvent, useScope } from '../utils'
 
 type typeProps = typePropsFields &
   ImageProps &
@@ -16,15 +15,13 @@ type typeProps = typePropsFields &
 export const Image = connect(
   ({ useValue, value, src, eventsConfig, ...props }: typeProps) => {
     const srcHandled = (useValue ? value : src) || ''
-    const scope = useScope()
     return (
       <Component
         src={srcHandled}
         {...props}
         onClick={(e) => {
-          if (eventsConfig?.scriptClick) {
-            formilyStoreEvent(scope, eventsConfig.scriptClick)
-          }
+          e?.preventDefault()
+          eventsConfig?.scriptClick?.()
         }}
       ></Component>
     )

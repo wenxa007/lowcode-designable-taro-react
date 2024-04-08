@@ -10,81 +10,19 @@ import {
 import { FormItemSwitcher } from '../../common/FormItemSwitcher'
 import { AllSchemas } from '../../schemas'
 
-const eventProps = {
-  api: {
-    type: 'string',
-    'x-decorator': 'FormItem',
-    'x-component': 'Select',
-    enum: [
-      { label: '自定义JS语句执行', value: 'runStatement' },
-      { label: 'Taro界面交互showToast', value: 'Taro.showToast' },
-      { label: 'Taro界面交互showModal', value: 'Taro.showModal' },
-      { label: 'formily表单修改values', value: '$form.setValues' },
-      // { label: 'formily字段', value: '$self' }
-    ],
-  },
-  path: {
-    type: 'string',
-    'x-decorator': 'FormItem',
-    'x-component': 'Input',
-  },
-  propsOperatorsArrayTitle: {
-    type: 'string',
-    'x-decorator': 'FormItem',
-    title: '参数表达式数组',
-  },
-  propsOperatorsArray: {
-    type: 'array',
-    'x-component': 'ArrayItems',
-    items: {
-      type: 'void',
-      'x-component': 'Space',
-      properties: {
-        input: {
-          type: 'string',
-          'x-component': 'Input.TextArea',
-        },
-        remove: {
-          type: 'void',
-          'x-component': 'ArrayItems.Remove',
-        },
-      },
-    },
-    properties: {
-      add: {
-        type: 'void',
-        title: '添加条目',
-        'x-component': 'ArrayItems.Addition',
-      },
-    },
-  },
-}
-
 export const eventsConfigProperties = {
   scriptClick: {
-    type: 'object',
-    'x-component': 'DrawerSetter',
     'x-decorator': 'FormItem',
-    'x-decorator-props': {
-      labelStyle: {
-        display: 'none',
-      },
-    },
-    properties: {
-      ...eventProps,
+    'x-component': 'ValueInput',
+    'x-component-props': {
+      include: ['EXPRESSION'],
     },
   },
   scriptClose: {
-    type: 'object',
-    'x-component': 'DrawerSetter',
     'x-decorator': 'FormItem',
-    'x-decorator-props': {
-      labelStyle: {
-        display: 'none',
-      },
-    },
-    properties: {
-      ...eventProps,
+    'x-component': 'ValueInput',
+    'x-component-props': {
+      include: ['EXPRESSION'],
     },
   },
 }
@@ -137,7 +75,10 @@ export const createComponentSchema = (
         'x-component-props.eventsConfig': {
           type: 'object',
           properties: props?.['component-events-group']
-            ? lodash.pick(eventsConfigProperties, props['component-events-group'])
+            ? lodash.pick(
+              eventsConfigProperties,
+              props['component-events-group']
+            )
             : eventsConfigProperties,
         },
       },
@@ -172,7 +113,6 @@ export const createComponentSchema = (
         'x-decorator-props.style': lodash.cloneDeep(AllSchemas.CSSStyle),
       },
     },
-
   }
 }
 
@@ -181,7 +121,7 @@ const FormItemProperties: ISchema = {
   properties: {
     errorMessageAlign: {
       type: 'string',
-      enum: ['center' , 'right' , 'left'],
+      enum: ['center', 'right', 'left'],
       'x-decorator': 'FormItem',
       'x-component': 'Select',
       'x-component-props': {
@@ -199,7 +139,6 @@ const FormItemProperties: ISchema = {
     },
   },
 }
-
 
 export const createFieldSchema = ({
   component,

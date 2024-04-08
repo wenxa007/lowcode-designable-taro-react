@@ -3,33 +3,16 @@ import {
   registerValidateRules,
   setValidateLanguage,
 } from '@formily/core'
-import Taro from '@tarojs/taro'
-import { formilyCompilerInMiniRegister, formilyStoreRegister } from 'ui-nutui-react-taro'
+import { Schema } from '@formily/json-schema'
+import { miniCompiler } from 'ui-nutui-react-taro'
 
 export function initFormily() {
   if (process.env.TARO_ENV !== 'h5') {
     // json-schema注册兼容小程序的解析器
-    formilyCompilerInMiniRegister()
+    Schema.registerCompiler(miniCompiler)
   } else {
     // json-schema注册兼容小程序的解析器 在h5环境中测试
-    formilyCompilerInMiniRegister()
-
-    // 注册formily自定义组件全局数据源
-    // 补充部分h5缺失的Taro方法
-    formilyStoreRegister({
-      Taro: {
-        ...Taro,
-        // 注册一些 PC Taro上没有的方法
-        showToast(arg) {
-          const { title = '', duration = 2 } = arg || {}
-          alert(title)
-        },
-        showModal(arg) {
-          const { content = '', duration = 2 } = arg || {}
-          alert(content)
-        },
-      },
-    })
+    // Schema.registerCompiler(miniCompiler)
   }
 
   // 组件初始化

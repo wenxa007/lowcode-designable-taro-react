@@ -1,9 +1,3 @@
-const eventProps = {
-  api: '预设api',
-  path: '路径',
-  propsOperatorsArray: '参数表达式数组'
-}
-
 export const CSSStyleLocales = {
   position: '定位',
   top: 'top',
@@ -60,8 +54,8 @@ export const Field = {
         placeholder: '占位提示',
         style: CSSStyleLocales,
         eventsConfig: {
-          scriptClick: { title: '点击事件', ...eventProps },
-          scriptClose: { title: '关闭事件', ...eventProps },
+          scriptClick: { title: '点击事件' },
+          scriptClose: { title: '关闭事件' },
         }
       },
       'x-decorator-props': {

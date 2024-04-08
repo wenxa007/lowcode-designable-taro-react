@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react'
 import { ArrayField } from '@formily/core'
 import {
+  ExpressionScope,
   JSXComponent,
   RecordScope,
   RecordsScope,
@@ -69,7 +70,9 @@ export const ArrayBase: ComposedArrayBase = (props) => {
   return (
     <RecordsScope getRecords={() => field.value}>
       <ArrayBaseContext.Provider value={{ field, schema, props }}>
-        {props.children}
+        <ExpressionScope value={{ $array: field }}>
+          {props.children}
+        </ExpressionScope>
       </ArrayBaseContext.Provider>
     </RecordsScope>
   )
