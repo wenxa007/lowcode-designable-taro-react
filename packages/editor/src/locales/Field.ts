@@ -14,7 +14,7 @@ export const CSSStyleLocales = {
   padding: '内边距',
   borderRadius: '圆角',
   border: '边框',
-  opacity: '透明度'
+  opacity: '透明度',
 }
 
 export const Field = {
