@@ -9,26 +9,24 @@
 
 以todolist中每一项任务右边的删除按钮为示例
 
-```
+```json
 {
-  type: 'void', // 类型 void类型表单项就是没有关联表单数据
-  title: 'Icon', // 标题 一般标题用于显示在FormItem（x-decorator 字段 UI 包装器组件）
-  'x-component': 'Icon', // 字段 UI 组件
-  'x-component-props': { // 字段 UI 组件属性，就是业务组件Props能拿到的参数
-    iconName: 'check-disabled',
-    style: {}, // 组件样式
-    eventsConfig: { // 本项目实现的事件配置
-      scriptClick: { // 点击事件配置
-        propsOperatorsArray: [ // 事件函数入参
-          'console.log($index), $array.field.remove($index)',
-        ],
-        api: 'runStatement', // 事件要调用的api
-      },
-      scriptClose: {},
+  "type": "void", // 类型 void类型表单项就是没有关联表单数据
+  "title": "Icon", // 标题 一般标题用于显示在FormItem（x-decorator 字段 UI 包装器组件）
+  "x-component": "Icon", // 字段 UI 组件
+  "x-component-props": { // 字段 UI 组件属性，就是业务组件Props能拿到的参数
+    "iconName": "check-disabled",
+    "style": { // 组件样式
     },
+    "eventsConfig": { // 本项目实现的事件配置
+      // 点击事件表达式
+      // $开头的变量是内置表达式作用域，主要用于在表达式中实现各种联动关系
+      // https://react.formilyjs.org/zh-CN/api/shared/schema#%E5%86%85%E7%BD%AE%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%BD%9C%E7%94%A8%E5%9F%9F
+      "scriptClick": "{{ () => { console.log($index, $array); $array.remove($index)} }}"
+    }
   },
-  'x-designable-id': '956d01mudrx',
-  'x-index': 1,
+  "x-designable-id": "956d01mudrx",
+  "x-index": 1
 }
 ```
 

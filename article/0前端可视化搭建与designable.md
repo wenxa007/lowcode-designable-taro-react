@@ -128,7 +128,7 @@ export default Input
 
 给组件添加行为，大致就是描述一下组件有哪些属性需要在 `设计器` 上配置的，可以配置哪些内容，还有 `设计器` 与组件的交互，例如点击、拖拉这个组件会有什么反应。
 给组件添加资源，简单的理解就是添加一些在 `设计器` 展示的内容，比如需要展示在左边组件区，那就需要一个icon
-![designable-antd-left](./showImage/designable-antd-left.png)
+![designable-antd-left](../showImage/designable-antd-left.png)
 
 有了这些配置，组件就变成了 `低代码物料`
 
