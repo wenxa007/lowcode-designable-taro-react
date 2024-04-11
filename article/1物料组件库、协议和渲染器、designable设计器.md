@@ -13,7 +13,8 @@
 {
   "type": "void", // 类型 void类型表单项就是没有关联表单数据
   "title": "Icon", // 标题 一般标题用于显示在FormItem（x-decorator 字段 UI 包装器组件）
-  "x-component": "Icon", // 字段 UI 组件
+  "x-component": "Icon", // 字段 UI 组件，对应在SchemaField创建时传入的组件，SchemaField 组件是专门用于解析JSON-Schema动态渲染表单的组件
+  // https://react.formilyjs.org/zh-CN/api/components/schema-field
   "x-component-props": { // 字段 UI 组件属性，就是业务组件Props能拿到的参数
     "iconName": "check-disabled",
     "style": { // 组件样式
@@ -49,7 +50,7 @@ Formily 的字段模型核心包含了两类字段模型：数据型字段和虚
 
 ### Form组件
 
-Form组件是地基，接收一个Form实例，渲染children内容。
+Form组件是地基，用@formily/react中的FormProvider组件接收一个Form实例，为children提供formily表单context。
 本项目里 packages/ui/src/components里面 实现了Form组件和FormPage组件，
 FormPage组件除了formily提供的能力外就是一个Taro的View组件，
 Form组件则多了nutui Form组件的样式
@@ -69,15 +70,8 @@ import { View } from '@tarojs/components'
 
 import { PreviewText } from '../PreviewText'
 
-export interface IFormPageProps {
-  form?: FormType
-  component?: JSXComponent
-  previewTextPlaceholder?: React.ReactNode
-  className?: string
-  style?: React.CSSProperties
-}
 
-export const FormPage: React.FC<React.PropsWithChildren<IFormPageProps>> = ({
+export const FormPage = ({
   form,
   component,
   previewTextPlaceholder,
@@ -99,7 +93,7 @@ export const FormPage: React.FC<React.PropsWithChildren<IFormPageProps>> = ({
     </ExpressionScope>
   )
   if (form)
-    // 最重要的是这里，有FormProvider才能提供MVVM能力，进行微操
+    // 最重要的是这里，有FormProvider才能提供fomily在react组件中的一系列能力
     return <FormProvider form={form}>{renderContent(form)}</FormProvider>
   if (!top) throw new Error('must pass form instance by createForm')
   return renderContent(top)
@@ -117,18 +111,20 @@ export default FormPage
 我们要改造一下FormItem的最外层，要让designable属性能够挂到dom上，并且阉割掉原来UI库有关Form的功能，化为己用。
 用 `@formily/react` 的 `connect`，`mapProps` 来让FormItem组件可以链接到表单
 
-### Input
+### 简单适配
 
-Input组件适配Formily代码如下
+组件适配Formily最简单的处理的话只需要用connect包裹
+需要修改表单field属性映射到组件props的话就要使用mapProps
+https://react.formilyjs.org/zh-CN/api/shared/map-props
 
 ```tsx
 import React from 'react'
 import { connect, mapProps, mapReadPretty } from '@formily/react'
-import { Input as component } from '@taroify/core'
+import { DatePicker as component } from '@nutui/nutui-react-taro'
 
 import { PreviewText } from '../PreviewText'
 
-export const Input = connect(
+export const DatePicker = connect(
   component,
   mapProps((props, field) => {
     return {
@@ -139,61 +135,74 @@ export const Input = connect(
 )
 ```
 
-是不是灰常简单
-
 ### SchemaField
 
-最后我们用 `createSchemaField` 包一层，生成属于 `taroify` 的渲染器
+最后我们用 `createSchemaField` 注册一下适配好的UI组件，创建一个用于解析JSON-Schema动态渲染表单的组件，并
+在本项目 packages/ui/src/components/SchemaField.ts中，创建SchemaField并导出让后续的编辑器和实际项目中使用
 
 ```ts
 import { createSchemaField } from '@formily/react'
 
-import {
-  Button,
-  CellGroup,
-  Checkbox,
-  DatetimePicker,
-  FormItem,
-  Input,
-  Radio,
-  Rate,
-  Slider,
-  Stepper,
-  Switch,
-  WidgetBase,
-} from './index'
+import { ArrayViews } from './ArrayViews'
+import { Button } from './Button'
+import { Checkbox } from './Checkbox'
+import { DatePicker } from './DatePicker'
+import { Form } from './Form'
+import { FormItem } from './FormItem'
+import { Icon } from './Icon'
+import { Image } from './Image'
+import { Input } from './Input'
+import { InputNumber } from './InputNumber'
+import { Radio } from './Radio'
+import { Range } from './Range'
+import { Rate } from './Rate'
+import { Switch } from './Switch'
+import { Text } from './Text'
+import { TextArea } from './TextArea'
+import { WidgetBase } from './WidgetBase'
+import { WidgetCell } from './WidgetCell'
+import { WidgetCellGroup } from './WidgetCellGroup'
+import { WidgetList } from './WidgetList'
+import { WidgetPopup } from './WidgetPopup'
 
 export const SchemaField = createSchemaField({
   components: {
+    ArrayViews,
     Button,
-    CellGroup,
     Checkbox,
-    DatetimePicker,
+    DatePicker,
+    Form,
     FormItem,
+    Icon,
+    Image,
     Input,
+    InputNumber,
     Radio,
+    Range,
     Rate,
-    Slider,
-    Stepper,
     Switch,
+    Text,
+    TextArea,
     WidgetBase,
+    WidgetCell,
+    WidgetCellGroup,
+    WidgetList,
+    WidgetPopup,
   },
 })
-
 ```
 
 组件库准备好了之后，我们可以选择用 `rollup` 打包，也可以选择在项目中直接使用 `tsx` 文件。
 
-## designable使用Taro组件
+## designable可视化设计器使用Taro组件
 
 由于 `Taro` 跨端的特性，让组件库在 `h5` 环境下展示是一定可以的，不过有两种方案：
 
-1. 用完整的Taro项目，接入部分designable能力，最后以iframe的形式嵌入PC设计器中
-2. PC设计器营造 `h5` 端的氛围，让Taro组件直接展示，不经过 `@tarojs/cli` 打包
+1. 用完整的Taro项目，接入designable API和组件，适配好在PC上的展示 （这种方式打包较慢，要Taro4.0提供vite打包后才快 可参考仓库https://github.com/SHRaymondJ/lowcode-formily-taro-vue3）
+2. 设计器适配部分Taro在h5中的逻辑，不使用Taro打包
 
-我选择了方案二，感觉比较简单，因为不需要跨iframe通信，而且觉得`@tarojs/cli`打包到h5比较慢（这里没有经过验证）。
+本项目使用方案二
 
-**那么如何营造 `Taro h5` 氛围呢？**
 首先 `@tarojs/components` 使⽤了 `Stencil` 去实现了⼀个基于 `WebComponents` 且遵循微信⼩程序规范的组件库，用 `reactify-wc` 让React项目中能够使用 `WebComponent`，`stenciljs` 打包的组件产物中有 `defineCustomElements`，调用一下才可以把 `WebComponents` 注册到浏览器中
 ![taro-h5-webComponents](../showImage/taro-h5-webComponents.png)
 我们在设计器项目中需要把该方法导出来用一下，还需要引入Taro组件样式
@@ -202,12 +211,26 @@ export const SchemaField = createSchemaField({
 在设计器 `main.tsx` 中
 
 ```tsx
+import React from 'react'
+import { findDOMNode, render, unstable_batchedUpdates } from 'react-dom'
+import ReactDOM, { createRoot } from 'react-dom/client'
 import { defineCustomElements } from '@tarojs/components/dist/esm/loader.js'
-import '@tarojs/components/dist/taro-components/taro-components.css'
-defineCustomElements(window)
+import { createReactApp } from '@tarojs/plugin-framework-react/dist/runtime'
+import { createH5NativeComponentConfig } from '@tarojs/plugin-framework-react/dist/runtime'
+
+import App from './app'
+
+// Taro H5 初始化
+Object.assign(ReactDOM, { findDOMNode, render, unstable_batchedUpdates }) // Taro H5对于React18的处理
+defineCustomElements(window) // 注册WebComponents组件
+const appObj = createReactApp(App, React, ReactDOM, {
+  appId: 'root'
+})
+createH5NativeComponentConfig(null, React, ReactDOM) // Taro页面管理逻辑和Hooks初始化
+appObj.onLaunch()
 ```
 
-接着webpack配置还要处理两个地方
+接着打包配置
 参考 `plugin-framework-react` 这个taro包中的处理
 在 'node_modules/@tarojs/plugin-framework-react/dist/index.js' 文件中，有个 `modifyH5WebpackChain` 方法来处理编译到H5时的webpack配置
 
@@ -297,6 +320,7 @@ function setPlugin(ctx, framework, chain) {
 }
 ```
 
+设计器打包需要额外添加的Taro配置
 ```ts
 export default {
   resolve: {
@@ -323,13 +347,6 @@ export default {
 ```
 
 这样就可以获得一个残缺的 `Taro h5 React` 环境，会有一些api不支持，比如路由跳转。
-
-要开始使用 `taroify-formily`，还得先引入它的爸爸 `taroify` 组件库的样式
-
-```tsx
-import '@taroify/icons/index.scss'
-import '@taroify/core/index.scss'
-```
 
 ### 组件封装物料
 

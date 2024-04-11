@@ -8,12 +8,12 @@ import { createH5NativeComponentConfig } from '@tarojs/plugin-framework-react/di
 import App from './app'
 
 // Taro H5 初始化
-Object.assign(ReactDOM, { findDOMNode, render, unstable_batchedUpdates })
-defineCustomElements(window)
+Object.assign(ReactDOM, { findDOMNode, render, unstable_batchedUpdates }) // Taro H5对于React18的处理
+defineCustomElements(window) // 注册WebComponents组件
 const appObj = createReactApp(App, React, ReactDOM, {
   appId: 'root'
 })
-createH5NativeComponentConfig(null, React, ReactDOM)
+createH5NativeComponentConfig(null, React, ReactDOM) // Taro页面管理逻辑和Hooks初始化
 appObj.onLaunch()
 
 
