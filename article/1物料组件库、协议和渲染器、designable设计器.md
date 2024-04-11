@@ -38,7 +38,7 @@ https://nutui.jd.com/taro/react/2x/#/zh-CN/guide/intro-react
 
 ### Formily组件编写
 
-可参考 `ui/src/components` 目录
+可参考本项目仓库 `packages/ui/src/components` 目录
 
 Formily 的字段模型核心包含了两类字段模型：数据型字段和虚数据型字段
 数据型字段(Field)，核心是负责维护表单数据(表单提交时候的值)。
@@ -196,6 +196,8 @@ export const SchemaField = createSchemaField({
 
 ## designable可视化设计器使用Taro组件
 
+以下内容可参考本项目 `packages/editor` 目录
+
 由于 `Taro` 跨端的特性，让组件库在 `h5` 环境下展示是一定可以的，不过有两种方案：
 
 1. 用完整的Taro项目，接入designable API和组件，适配好在PC上的展示 （这种方式打包较慢，要Taro4.0提供vite打包后才快 可参考仓库https://github.com/SHRaymondJ/lowcode-formily-taro-vue3）
@@ -230,8 +232,7 @@ createH5NativeComponentConfig(null, React, ReactDOM) // Taro页面管理逻辑�
 appObj.onLaunch()
 ```
 
-接着打包配置
-参考 `plugin-framework-react` 这个taro包中的处理
+打包配置参考 `plugin-framework-react` 这个taro包中的处理
 在 'node_modules/@tarojs/plugin-framework-react/dist/index.js' 文件中，有个 `modifyH5WebpackChain` 方法来处理编译到H5时的webpack配置
 
 ```js
@@ -320,7 +321,7 @@ function setPlugin(ctx, framework, chain) {
 }
 ```
 
-设计器打包需要额外添加的Taro配置
+所以设计器打包需要额外添加以下Taro配置
 ```ts
 export default {
   resolve: {
@@ -352,176 +353,12 @@ export default {
 
 组件封装物料，主要是添加 `Behavior` 和 `createResource`，重点还是 `Behavior`
 
-Form组件处理，`Behavior` 中的 `propsSchema` 就是最主要的部分，`type` 定义了Form组件绑定的是对象字段模型，`properties` 中定义了 `style` 需要编辑。
-
-我们看看 `style` 有些什么东西，以下代码展示了 `style` 的各个字段可以用 `Select`、`SizeInput`、`BackgroundStyleSetter` 等 `designable` 提供的配置器去配置属性，由 `x-component` 指定
-
-```ts
-import { ISchema } from '@formily/react'
-
-export const CSSStyle: ISchema = {
-  type: 'void',
-  properties: {
-    'style.position': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      default: 'relative',
-      'x-component': 'Select',
-      enum: [
-        { label: 'static', value: 'static' },
-        { label: 'relative', value: 'relative' },
-        { label: 'absolute', value: 'absolute' },
-        { label: 'fixed', value: 'fixed' },
-        { label: 'sticky', value: 'sticky' },
-      ],
-    },
-    'style.top': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-      default: '0px',
-    },
-    'style.left': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-      default: '0px',
-    },
-    'style.right': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-      default: '0px',
-    },
-    'style.bottom': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-      default: '0px',
-    },
-    'style.width': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-    },
-    'style.height': {
-      type: 'string',
-      'x-decorator': 'FormItem',
-      'x-component': 'SizeInput',
-    },
-    'style.display': {
-      'x-component': 'DisplayStyleSetter',
-    },
-    'style.background': {
-      'x-component': 'BackgroundStyleSetter',
-    },
-    'style.boxShadow': {
-      'x-component': 'BoxShadowStyleSetter',
-    },
-    'style.font': {
-      'x-component': 'FontStyleSetter',
-    },
-    'style.margin': {
-      'x-component': 'BoxStyleSetter',
-    },
-    'style.padding': {
-      'x-component': 'BoxStyleSetter',
-    },
-    'style.borderRadius': {
-      'x-component': 'BorderRadiusStyleSetter',
-    },
-    'style.border': {
-      'x-component': 'BorderStyleSetter',
-    },
-    'style.opacity': {
-      'x-decorator': 'FormItem',
-      'x-component': 'Slider',
-      'x-component-props': {
-        defaultValue: 1,
-        min: 0,
-        max: 1,
-        step: 0.01,
-      },
-    },
-  },
-}
-```
 
 ```tsx
-import React, { useMemo } from 'react'
-import { createBehavior, createResource } from '@pind/designable-core'
-import { DnFC, usePrefix } from '@pind/designable-react'
-import { createForm } from '@formily/core'
-import { observer } from '@formily/react'
-import * as lodash from 'lodash-es'
-import { Form as FormilyForm } from 'taroify-formily/lib'
-
-import { AllLocales } from '../../locales'
-import { AllSchemas } from '../../schemas'
-
-export const Form: DnFC<React.ComponentProps<typeof FormilyForm>> = observer(
-  (props) => {
-    const form = useMemo(
-      () =>
-        createForm({
-          designable: true,
-        }),
-      []
-    )
-    return (
-      <FormilyForm
-        {...props}
-        form={form}
-      >
-        {props.children}
-      </FormilyForm>
-    )
-  }
-)
-
-Form.Behavior = createBehavior({
-  name: 'Form',
-  selector: (node) => node.componentName === 'Form',
-  designerProps(node) {
-    return {
-      draggable: !node.isRoot,
-      cloneable: !node.isRoot,
-      deletable: !node.isRoot,
-      droppable: true,
-      propsSchema: {
-        type: 'object',
-        properties: {
-          style: {
-            type: 'void',
-            properties: lodash.omit(AllSchemas.CSSStyle.properties as object, ['style.position', 'style.top', 'style.left', 'style.right', 'style.bottom'])
-          },
-        },
-      },
-      defaultProps: {
-      },
-    }
-  },
-  designerLocales: AllLocales.Form,
-})
-
-Form.Resource = createResource({
-  title: { 'zh-CN': '表单' },
-  icon: 'FormLayoutSource',
-  elements: [
-    {
-      componentName: 'Field',
-      props: {
-        type: 'object',
-        'x-component': 'Form',
-      },
-    },
-  ],
-})
 
 ```
 
-so，表单组件在 `designable` 中有一些样式可以配置
-![taroify-formily-designable-Form-settings](../showImage/taroify-formily-designable-Form-settings.png)
+
 
 #### Input组件封装物料
 

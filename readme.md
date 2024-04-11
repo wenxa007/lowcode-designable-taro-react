@@ -86,3 +86,10 @@ npm start
 > - 没有文档，可以看一些非官方文章或视频教程
 > - [表单设计器开发指南](https://formilyjs.org/zh-CN/guide/form-builder)
 > - [Designable 应用和源码浅析](https://zhuanlan.zhihu.com/p/431263711)
+
+## 目录详细介绍
+
+├─ packages
+  ├─ editor: 基于 `Designable` + `Formily.js` 实现的页面可视化搭建设计器，使用 `rspack` 构建，并做了兼容Taro组件H5渲染处理
+  ├─ mobile: Taro项目demo例子
+  ├─ ui: 使用 `@nutui/nutui-react-taro` 组件库做的适配formily的组件
