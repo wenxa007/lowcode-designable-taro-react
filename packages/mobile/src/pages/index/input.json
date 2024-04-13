@@ -184,7 +184,7 @@
                   },
                   "noActiveIcon": {
                     "imageProps": {
-                      "mode": "aspectFit",
+                      "mode": "aspectFill",
                       "style": {
                         "position": "relative"
                       }
@@ -198,7 +198,7 @@
                   },
                   "activeIcon": {
                     "imageProps": {
-                      "mode": "aspectFit",
+                      "mode": "aspectFill",
                       "style": {
                         "position": "relative"
                       }

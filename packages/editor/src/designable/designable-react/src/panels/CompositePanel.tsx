@@ -58,9 +58,11 @@ export const CompositePanel: ReactFC<ICompositePanelProps> & {
   Item: ReactFC<ICompositePanelItemProps>
 } = (props) => {
   const prefix = usePrefix('composite-panel')
+  
   const [activeKey, setActiveKey] = useState<string | number | undefined>(
     props.defaultActiveKey ?? getDefaultKey(props.children)
   )
+
   const activeKeyRef = useRef<string | number>()
   const [pinning, setPinning] = useState(props.defaultPinning ?? false)
   const [visible, setVisible] = useState(props.defaultOpen ?? true)

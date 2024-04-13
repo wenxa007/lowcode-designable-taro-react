@@ -65,7 +65,7 @@ export const imageDesignableConfig = {
         'bottomLeft',
         'bottomRight',
       ],
-      default: 'aspectFit',
+      default: 'aspectFill',
     },
     lazyLoad: {
       type: 'boolean',
