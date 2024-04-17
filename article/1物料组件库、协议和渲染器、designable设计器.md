@@ -46,7 +46,7 @@ Formily 的字段模型核心包含了两类字段模型：数据型字段和虚
 [字段模型](https://core.formilyjs.org/zh-CN/guide/field)
 
 那在 `ui/src/components` 目录中，Widget开头的组件和Button是VoidField，只用来展示UI的，不跟表单数据做关联，
-其余的像 CheckBox、DatePicker、Input组件是跟表单数据做关联的，用 `@formily/react` 中的 `connect`, `mapProps` 方法包装组件来连接表单，最基础的数据型组件要求Props有 `value` 和 `onChange`
+其余的像 CheckBox、Input组件是跟表单数据做关联的，用 `@formily/react` 中的 `connect`, `mapProps` 方法包装组件来连接表单，最基础的数据型组件要求Props有 `value` 和 `onChange`
 
 ### Form组件
 
@@ -120,15 +120,15 @@ https://react.formilyjs.org/zh-CN/api/shared/map-props
 ```tsx
 import React from 'react'
 import { connect, mapProps, mapReadPretty } from '@formily/react'
-import { DatePicker as component } from '@nutui/nutui-react-taro'
+import { InputNumber as Component } from '@nutui/nutui-react-taro'
 
 import { PreviewText } from '../PreviewText'
 
-export const DatePicker = connect(
-  component,
+export const InputNumber = connect(
+  Component,
   mapProps((props, field) => {
     return {
-      ...props
+      ...props,
     }
   }),
   mapReadPretty(PreviewText.Input)
@@ -351,83 +351,120 @@ export default {
 
 ### 组件封装物料
 
-组件封装物料，主要是添加 `Behavior` 和 `createResource`，重点还是 `Behavior`
+使用deignable的两个API去包装组件
+`createResource` 创建资源基础信息，用于左侧拖拽组件
+`createBehavior` 创建组件的行为，locals 信息、propsSchema 可修改属性
+这里参考本项目 `packages/editor/src/components` 目录
 
+其中最中要的是 `Field` 组件，这个组件不是适配formily组件库出来的，也不能用于JSON Schema渲染页面，
+这个组件是为了designable设计器在页面编辑模式中渲染formily组件用的
 
 ```tsx
+import {
+  ArrayField,
+  Field as InternalField,
+  ISchema,
+  ObjectField,
+  observer,
+  Schema,
+  VoidField,
+} from '@formily/react'
 
+...
+
+export const Field: DnFC<ISchema> = observer((props) => {
+  const designer = useDesigner()
+  const components = useComponents()
+  const node = useTreeNode()
+  if (!node) return null
+  const fieldProps = toDesignableFieldProps( // 处理单个组件的JSON Schema，去掉表达式联动逻辑
+    props,
+    components,
+    designer.props.nodeIdAttrName,
+    node.id
+  )
+  if (props.type === 'object') {
+    return (
+      <Container>
+        <ObjectField {...fieldProps} name={node.id}>
+          {props.children}
+        </ObjectField>
+      </Container>
+    )
+  } else if (props.type === 'array') {
+    return <ArrayField {...fieldProps} name={node.id} />
+  } else if (node.props.type === 'void') {
+    return (
+      <VoidField {...fieldProps} name={node.id}>
+        {props.children}
+      </VoidField>
+    )
+  }
+  return <InternalField {...fieldProps} name={node.id} />
 ```
 
-
-
-#### Input组件封装物料
-
-为什么跳过了 `FormItem` 呢，因为它是角色是其他组件的装饰器，它的属性在装饰目标组件上配置就可以了
-
-Input组件处理
+`Field` 组件用 `@formily/react` 库中的各种类型的组件对formily组件进行渲染，让组件只有基础的渲染功能，去掉了对formily中很多复杂的表单逻辑、联动逻辑的支持
+designable页面设计器最终会用 `ComponentTreeWidget` 去绘制页面编辑模式时的界面
+除此以外 `Field` 组件还预置了国际化文本、组件大小缩放位移行为
 
 ```tsx
-import React from 'react'
-import { createBehavior, createResource } from '@pind/designable-core'
-import { DnFC } from '@pind/designable-react'
-import { Input as component } from 'taroify-formily/lib'
-
-import { AllLocales } from '../../locales'
-import { AllSchemas } from '../../schemas'
-import { createFieldSchema } from '../Field'
-
-export const Input: DnFC<React.ComponentProps<typeof component>> = component
-const propsSchema = createFieldSchema({
-  component: AllSchemas.Input,
-  props: {
-    'component-events-group': []
-  }
-}) as any
-
-Input.Behavior = createBehavior(
-  {
-    name: 'Input',
-    extends: ['Field'],
-    selector: (node) => node.props['x-component'] === 'Input',
-    designerProps: {
-      propsSchema,
-      defaultProps: {
-      },
-    },
-    designerLocales: AllLocales.Input
+Field.Behavior = createBehavior({
+  name: 'Field',
+  selector: 'Field',
+  designerLocales: AllLocales.Field,
+  designerProps: {
+    ...behaviorOfResizeAndtranslate,
   },
-)
+})
+```
 
-Input.Resource = createResource(
-  {
-    icon: 'InputSource',
-    elements: [
-      {
-        componentName: 'Field',
-        props: {
-          type: 'string',
-          title: 'Input',
-          'x-decorator': 'FormItem',
-          'x-component': 'Input',
+其他组件在 `createBehavior` 的时候继承 `Field` 组件
+
+```tsx
+InputNumber.Behavior = createBehavior({
+  name: 'InputNumber',
+  extends: ['Field'],
+  selector: (node) => node.props['x-component'] === 'InputNumber',
+  designerProps: {
+    propsSchema,
+    defaultProps: {},
+  },
+  designerLocales: {
+    'zh-CN': {
+      title: '数字输入框',
+      settings: {
+        'x-component-props': {
+          allowEmpty: '是否允许内容为空',
+          min: '最小值',
+          max: '最大值',
+          type: 'input的类型',
+          step: '步长',
+          digits: '设置保留的小数位',
+          formatter: {
+            title: '格式转换器',
+            tooltip: '格式：function(value: number | string): string',
+          },
         },
       },
-    ],
+    },
   },
-)
+})
 
+InputNumber.Resource = createResource({
+  icon: 'NumberPickerSource',
+  elements: [
+    {
+      componentName: 'Field',
+      props: {
+        type: 'number',
+        title: 'InputNumber',
+        'x-decorator': 'FormItem',
+        'x-component': 'InputNumber',
+      },
+    },
+  ],
+})
 ```
-
-`createFieldSchema` 中封装了很多field模型的行为，例如 title(label)、校验规则、联动逻辑等在 `designable` 中如何配置。提前介绍一下如何微操低代码页面
-
-首先准备两个Input，一个叫a，一个叫b
-![](../showImage/howToReaction/1.png)
-![](../showImage/howToReaction/2.png)
-第二部点击b组件右侧的响应器配置，配置它的显示规则为当a字段的值为`hidden`时隐藏
-![](../showImage/howToReaction/3.png)
-在拖拉拽面板中是designable提供的react渲染器，切换到运行面板用Formily渲染器才有MVVM能力
-![](../showImage/howToReaction/4.png)
-随着我们在a输入框中输入`hidden`，b输入框就会神奇的消失了
-![](../showImage/howToReaction/5.png)
 
 ### designable正式使用物料
 

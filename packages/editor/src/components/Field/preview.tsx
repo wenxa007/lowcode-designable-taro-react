@@ -140,7 +140,7 @@ export const Field: DnFC<ISchema> = observer((props) => {
   const components = useComponents()
   const node = useTreeNode()
   if (!node) return null
-  const fieldProps = toDesignableFieldProps(
+  const fieldProps = toDesignableFieldProps( // 处理单个组件的JSON Schema，去掉表达式联动逻辑
     props,
     components,
     designer.props.nodeIdAttrName,

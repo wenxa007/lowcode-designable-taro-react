@@ -7,8 +7,6 @@ import {
 } from '@/designable/designable-core/src'
 import { DnFC } from '@/designable/designable-react/src'
 
-import { AllLocales } from '../../locales'
-import { AllSchemas } from '../../schemas'
 import { createFieldSchema } from '../Field'
 
 export const InputNumber: DnFC<React.ComponentProps<typeof component>> = component
