@@ -1,6 +1,6 @@
-# 物料组件库、协议和渲染器、designable设计器
+# formily协议和渲染器、designable设计器
 
-## 协议驱动
+## formily协议驱动
 
 本项目的H5和小程序动态渲染最核心的依赖是 `Formily.js` 的 `JSON Schema` 渲染能力
 先可看官方文档
@@ -31,27 +31,24 @@
 }
 ```
 
-## 组件库准备
+### 开发自己的formily组件
 
-使用 `@nutui/nutui-react-taro`
+本项目使用 `@nutui/nutui-react-taro`
 https://nutui.jd.com/taro/react/2x/#/zh-CN/guide/intro-react
+可参考packages/ui/src/components目录
 
-### Formily组件编写
-
-可参考本项目仓库 `packages/ui/src/components` 目录
-
-Formily 的字段模型核心包含了两类字段模型：数据型字段和虚数据型字段
+formily的字段模型核心包含了两类字段模型：数据型字段和虚数据型字段
 数据型字段(Field)，核心是负责维护表单数据(表单提交时候的值)。
 虚数据型字段(VoidField)，你可以理解为它就是一个阉割了数据维护能力的 Field，所以它更多的是作为容器维护一批字段的 UI 形式。
 [字段模型](https://core.formilyjs.org/zh-CN/guide/field)
 
-那在 `ui/src/components` 目录中，Widget开头的组件和Button是VoidField，只用来展示UI的，不跟表单数据做关联，
+在ui/src/components目录中，Widget开头的组件和Button是VoidField，只用来展示UI的，不跟表单数据做关联，
 其余的像 CheckBox、DatePicker、Input组件是跟表单数据做关联的，用 `@formily/react` 中的 `connect`, `mapProps` 方法包装组件来连接表单，最基础的数据型组件要求Props有 `value` 和 `onChange`
 
 ### Form组件
 
-Form组件是地基，用@formily/react中的FormProvider组件接收一个Form实例，为children提供formily表单context。
-本项目里 packages/ui/src/components里面 实现了Form组件和FormPage组件，
+Form组件是地基，用 `@formily/react` 中的 `FormProvider` 组件接收一个Form实例，为children提供formily表单context。
+本项目里ui/src/components里面 实现了Form组件和FormPage组件，
 FormPage组件除了formily提供的能力外就是一个Taro的View组件，
 Form组件则多了nutui Form组件的样式
 
@@ -107,25 +104,53 @@ export default FormPage
 `nutui` 提供了一些表单组件
 ![nutui-FormItem](../showImage/nutui-FormItem.png)
 
-如图所见FormItem的作用就是显示label、必填、校验文案等，并且让表单布局更加美观，我们需要混入Formily能力。
+如图所见FormItem的作用就是显示label、必填、校验文案等，并且让表单布局更加美观，我们需要混入formily能力。
 我们要改造一下FormItem的最外层，要让designable属性能够挂到dom上，并且阉割掉原来UI库有关Form的功能，化为己用。
 用 `@formily/react` 的 `connect`，`mapProps` 来让FormItem组件可以链接到表单
 
-### 简单适配
+### UI组件适配formily
 
-组件适配Formily最简单的处理的话只需要用connect包裹
+组件适配formily最简单的处理的话只需要用connect包裹
 需要修改表单field属性映射到组件props的话就要使用mapProps
 https://react.formilyjs.org/zh-CN/api/shared/map-props
 
 ```tsx
 import React from 'react'
 import { connect, mapProps, mapReadPretty } from '@formily/react'
-import { DatePicker as component } from '@nutui/nutui-react-taro'
+import { Input as Component } from '@nutui/nutui-react-taro'
+import {
+  InputProps,
+} from '@nutui/nutui-react-taro/dist/types/index'
 
 import { PreviewText } from '../PreviewText'
 
-export const DatePicker = connect(
-  component,
+import { typePropsFields } from '../type'
+
+type typeProps = typePropsFields & InputProps & {
+  clearIcon: typeIconImageProps
+}
+
+import { getIconImageConfig, typeIconImageProps } from '../Icon/IconImage'
+
+export const Input = connect(
+  ({ clearIcon, ...props }: typeProps) => {
+    // 图标配置封装
+    const propNames = ['clearIcon']
+    const IconImageConfig = getIconImageConfig(propNames, {
+      clearIcon,
+    })
+    if (IconImageConfig.noActiveIcon) {
+      IconImageConfig.icon = IconImageConfig.noActiveIcon
+      delete IconImageConfig.noActiveIcon
+    }
+    if (props.type === 'number') {
+      const onChange = props.onChange
+      props.onChange = (val) => {
+        onChange(Number(val))
+      }
+    }
+    return <Component {...props}></Component>
+  },
   mapProps((props, field) => {
     return {
       ...props
@@ -135,10 +160,12 @@ export const DatePicker = connect(
 )
 ```
 
+formily的[Field模型](https://core.formilyjs.org/zh-CN/api/models/field)里像value、onChange、disabled等表单属性跟大多数UI组件库是适配的，nutui的input组件可以配置clearIcon，我们可以做额外的适配。
+
 ### SchemaField
 
 最后我们用 `createSchemaField` 注册一下适配好的UI组件，创建一个用于解析JSON-Schema动态渲染表单的组件，并
-在本项目 packages/ui/src/components/SchemaField.ts中，创建SchemaField并导出让后续的编辑器和实际项目中使用
+在本项目 packages/ui/src/components/SchemaField.ts中，创建SchemaField并导出在设计器和实际项目中使用
 
 ```ts
 import { createSchemaField } from '@formily/react'
@@ -351,104 +378,206 @@ export default {
 
 ### 组件封装物料
 
-组件封装物料，主要是添加 `Behavior` 和 `createResource`，重点还是 `Behavior`
+@designable/core 提供了两个api
+`createResource` 创建资源基础信息，用于左侧拖拽组件
+`createBehavior` 创建组件的行为，locals、propsSchema 可以描述右侧属性配置栏中可以配置的属性
 
+组件的Behavior，大致就是描述一下组件有哪些属性需要在设计器上配置的，可以配置哪些内容，还有设计器与组件的交互，例如点击、拖拉这个组件会有什么反应。
+给组件添加资源，简单的理解就是添加一些在设计器展示的内容，比如需要展示在左边组件区，那就需要一个icon
+![designable-antd-left](../showImage/designable-antd-left.png)
+有了这些配置，组件就变成了 `低代码物料`
+
+designable里面可以先实现一个Field组件来定义默认的Behavior和Resource
 
 ```tsx
-
+Field.Behavior = createBehavior({
+  name: 'Field',
+  selector: 'Field',
+  designerLocales: AllLocales.Field,
+  designerProps: {
+    ...behaviorOfResizeAndtranslate,
+  },
+})
 ```
 
-
-
-#### Input组件封装物料
-
-为什么跳过了 `FormItem` 呢，因为它是角色是其他组件的装饰器，它的属性在装饰目标组件上配置就可以了
-
-Input组件处理
+用formily的Input组件做designable物料组件，通过 ***extends: ['Field']*** 来继承默认的Behavior和Resource
 
 ```tsx
 import React from 'react'
-import { createBehavior, createResource } from '@pind/designable-core'
-import { DnFC } from '@pind/designable-react'
-import { Input as component } from 'taroify-formily/lib'
+import { Input as component } from 'ui-nutui-react-taro'
+
+import {
+  createBehavior,
+  createResource,
+} from '@/designable/designable-core/src'
+import { DnFC } from '@/designable/designable-react/src'
 
 import { AllLocales } from '../../locales'
 import { AllSchemas } from '../../schemas'
 import { createFieldSchema } from '../Field'
+import { iconimageDesignableConfig } from '../shared'
 
 export const Input: DnFC<React.ComponentProps<typeof component>> = component
-const propsSchema = createFieldSchema({
-  component: AllSchemas.Input,
-  props: {
-    'component-events-group': []
-  }
-}) as any
 
-Input.Behavior = createBehavior(
+const { imgsProperties, imgsLocales } = iconimageDesignableConfig([
   {
-    name: 'Input',
-    extends: ['Field'],
-    selector: (node) => node.props['x-component'] === 'Input',
-    designerProps: {
-      propsSchema,
-      defaultProps: {
-      },
-    },
-    designerLocales: AllLocales.Input
+    name: 'clearIcon',
+    locale: '清除图标',
   },
-)
+])
 
-Input.Resource = createResource(
-  {
-    icon: 'InputSource',
-    elements: [
-      {
-        componentName: 'Field',
-        props: {
-          type: 'string',
-          title: 'Input',
-          'x-decorator': 'FormItem',
-          'x-component': 'Input',
+const propsSchema = createFieldSchema({
+  component: {
+    type: 'object',
+    properties: {
+      type: {
+        type: 'string',
+        enum: ['text', 'number', 'digit', 'idcard'],
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
+        'x-component-props': {
+          defaultValue: 'text',
         },
       },
-    ],
+      placeholder: {
+        type: 'string',
+        'x-decorator': 'FormItem',
+        'x-component': 'Input',
+      },
+      align: {
+        type: 'string',
+        enum: ['left', 'center', 'right'],
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
+        'x-component-props': {
+          defaultValue: 'left',
+        },
+      },
+      maxLength: {
+        type: 'number',
+        'x-decorator': 'FormItem',
+        'x-component': 'NumberPicker',
+      },
+      clearable: {
+        type: 'boolean',
+        'x-decorator': 'FormItem',
+        'x-component': 'Switch',
+      },
+      confirmType: {
+        type: 'string',
+        enum: [
+          {
+            label: '发送',
+            value: 'send',
+          },
+          {
+            label: '搜索',
+            value: 'search',
+          },
+          {
+            label: '下一个',
+            value: 'next',
+          },
+          {
+            label: '前往',
+            value: 'go',
+          },
+          {
+            label: '完成',
+            value: 'done',
+          },
+        ],
+        'x-decorator': 'FormItem',
+        'x-component': 'Select',
+        'x-component-props': {
+          defaultValue: 'done',
+        },
+      },
+      password: {
+        type: 'boolean',
+        'x-decorator': 'FormItem',
+        'x-component': 'Switch',
+      },
+      ...imgsProperties,
+    },
   },
-)
+  props: {
+    'component-events-group': [],
+  },
+}) as any
 
+Input.Behavior = createBehavior({
+  name: 'Input',
+  extends: ['Field'],
+  selector: (node) => node.props['x-component'] === 'Input',
+  designerProps: {
+    propsSchema,
+    defaultProps: {},
+  },
+  designerLocales: {
+    'zh-CN': {
+      title: '输入框',
+      settings: {
+        'x-component-props': {
+          type: '输入框类型',
+          placeholder: 'placeholder',
+          align: '输入框内容对齐方式',
+          maxLength: '限制最长输入字符',
+          clearable: '展示清除Icon',
+          confirmType: '键盘右下角按钮的文字(小程序)',
+          password: '是否是密码',
+          ...imgsLocales,
+        },
+      },
+    },
+  },
+})
+
+Input.Resource = createResource({
+  icon: 'InputSource',
+  elements: [
+    {
+      componentName: 'Field',
+      props: {
+        type: 'string',
+        title: 'Input',
+        'x-decorator': 'FormItem',
+        'x-component': 'Input',
+      },
+    },
+  ],
+})
 ```
 
-`createFieldSchema` 中封装了很多field模型的行为，例如 title(label)、校验规则、联动逻辑等在 `designable` 中如何配置。提前介绍一下如何微操低代码页面
+![Input属性配置](../showImage/designable-input-settings.png)
+如图所见右侧属性配置中 `字段属性` 是默认的表单属性配置，组件属性部分通常就是针对每个组件额外字段处理部分，在 `propsSchema` 中定义
 
-首先准备两个Input，一个叫a，一个叫b
-![](../showImage/howToReaction/1.png)
-![](../showImage/howToReaction/2.png)
-第二部点击b组件右侧的响应器配置，配置它的显示规则为当a字段的值为`hidden`时隐藏
-![](../showImage/howToReaction/3.png)
-在拖拉拽面板中是designable提供的react渲染器，切换到运行面板用Formily渲染器才有MVVM能力
-![](../showImage/howToReaction/4.png)
-随着我们在a输入框中输入`hidden`，b输入框就会神奇的消失了
-![](../showImage/howToReaction/5.png)
-
-### designable正式使用物料
+### designable使用物料
 
 准备预览运行面板，使用 `Form组件` 和 `SchemaField组件` 提供运行时渲染能力，与实际消费端的区别是需要用 `designable` 提供的 `transformToSchema` 把拖拉拽面板中的组件树转成JSON协议。
 
 ```js
 import React, { useMemo } from 'react'
-import { transformToSchema } from '@pind/designable-formily-transformer'
 import { createForm } from '@formily/core'
-import { createSchemaField, FormProvider } from '@formily/react'
+import { createSchemaField } from '@formily/react'
 import {
-  CellGroup,
-  Form,
-  FormItem,
-  Input,
-  SchemaField,
-  WidgetBase,
-} from 'taroify-formily/lib'
+    Input,
+    ...
+} from '@formily/antd'
+import { Card, Slider, Rate } from 'antd' // 一些简单的布局组件或输入组件，即使不适配也能用起来
+import { TreeNode } from '@pind/designable-core'
+import { transformToSchema } from '@pind/designable-formily-transformer'
+
+const SchemaField = createSchemaField({
+  components: {
+    Input,
+    Card,
+    ...
+  },
+})
 
 export interface IPreviewWidgetProps {
-  tree: any
+  tree: TreeNode
 }
 
 export const PreviewWidget: React.FC<IPreviewWidgetProps> = (props) => {
@@ -462,95 +591,69 @@ export const PreviewWidget: React.FC<IPreviewWidgetProps> = (props) => {
 }
 ```
 
-designable main.tsx处理。主要有 `CompositePanel`、`WorkspacePanel`、`SettingsPanel` 三大区域。
-
-`CompositePanel`区域我们只需要把物料放入`ResourceWidget`中即可。
-
-`WorkspacePanel`放了三个`ViewPanel`，分别是拖拉拽面板、JSON编辑面板、预览运行时渲染面板，我们需要把物料放入拖拉拽面板中再次注册一下，需要把 预览运行时组件塞进
+app.tsx中，把物料组件导入， 放入 `ResourceWidget` 和 `ComponentTreeWidget` 两个设计器组件中。
+放入 `ResourceWidget` 是为了在设计器左侧展示可用物料组件
+`ComponentTreeWidget` 则是组件树渲染器，需要注册一下物料组件
 
 ```tsx
-const App = () => {
-  const engine = useMemo(
-    () =>
-      createDesigner({
-        rootComponentName: 'Form',
-      }),
-    []
-  )
-
-  return (
-    <Designer engine={engine}>
-      <Workbench>
-        <StudioPanel logo={<Logo />} actions={<Actions />}>
-          <CompositePanel>
-            <CompositePanel.Item title="panels.Component" icon="Component">
               <ResourceWidget
                 title="sources.Inputs"
-                sources={[Input, Checkbox, Radio, Rate]}
+                sources={[Input, InputNumber, TextArea, Checkbox, Radio, Rate, Switch]}
               />
-              <ResourceWidget title="sources.Displays" sources={[Button]} />
+              <ResourceWidget
+                title="sources.Displays"
+                sources={[Button, Icon, Image, Text]}
+              />
+              <ResourceWidget title="sources.Arrays" sources={[ArrayViews]} />
               <ResourceWidget
                 title="sources.Layouts"
-                sources={[WidgetBase, CellGroup]}
+                sources={[
+                  Form,
+                  WidgetBase,
+                  WidgetCell,
+                  WidgetCellGroup,
+                  WidgetList,
+                  WidgetPopup,
+                ]}
               />
-            </CompositePanel.Item>
-            <CompositePanel.Item title="panels.OutlinedTree" icon="Outline">
-              <OutlineTreeWidget />
-            </CompositePanel.Item>
-            <CompositePanel.Item title="panels.History" icon="History">
-              <HistoryWidget />
-            </CompositePanel.Item>
-          </CompositePanel>
-          <WorkspacePanel> //工作区域
-            <ToolbarPanel>
-              <DesignerToolsWidget />
-              <ViewToolsWidget use={['DESIGNABLE', 'JSONTREE', 'PREVIEW']} />
-            </ToolbarPanel>
-            <ViewportPanel
-              style={{ minHeight: '100%', width: '750px', overflow: 'overlay' }}
-            >
+```
+
+```tsx
               <ViewPanel type="DESIGNABLE">
                 {() => (
                   <ComponentTreeWidget
+                    className="ComponentTreeWidget"
                     components={{
+                      ArrayViews,
                       Button,
-                      CellGroup,
                       Checkbox,
                       Form,
+                      FormPage,
                       Field,
+                      Icon,
+                      Image,
                       Input,
+                      InputNumber,
                       Radio,
                       Rate,
+                      Switch,
+                      Text,
+                      TextArea,
                       WidgetBase,
+                      WidgetCell,
+                      WidgetCellGroup,
+                      WidgetList,
+                      WidgetPopup,
                     }}
                   />
                 )}
               </ViewPanel>
               <ViewPanel type="JSONTREE" scrollable={false}>
-                {(tree, onChange) => (
-                  <SchemaEditorWidget tree={tree} onChange={onChange} />
-                )}
+                {(tree, onChange) => {
+                  return <SchemaEditorWidget tree={tree} onChange={onChange} />
+                }}
               </ViewPanel>
               <ViewPanel type="PREVIEW">
                 {(tree) => <PreviewWidget tree={tree} />}
               </ViewPanel>
-            </ViewportPanel>
-          </WorkspacePanel>
-          <SettingsPanel title="panels.PropertySettings">
-            <SettingsForm uploadAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" />
-          </SettingsPanel>
-        </StudioPanel>
-      </Workbench>
-    </Designer>
-  )
-}
-
-ReactDOM.render(<App />, document.getElementById('root'))
 ```
-
-## 运行一下
-
-目前只有一些组件，先配置一些普通的页面吧
-![taroify-formily-designable](../showImage/taroify-formily-designable.png)
-
-到这里前端页面可视化搭建系统的第一步已经迈出来，有了基本的`组件库`、`协议和渲染器`，并且在`设计器`中可以配置组件属性最终渲染界面，下篇文章再介绍如何让 `小程序` 和 `H5` 渲染设计器产出的`JSONSchema`。

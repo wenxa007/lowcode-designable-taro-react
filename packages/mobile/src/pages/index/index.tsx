@@ -10,9 +10,9 @@ import {
   schemaTransitionPx,
 } from 'ui-nutui-react-taro'
 
-import { initFormily } from '@/utils/formily'
-
 import './index.scss'
+
+import { initFormily } from '../../utils/formily'
 
 import testJson from './todoList.json'
 
@@ -70,11 +70,13 @@ export default () => {
   }, [])
 
   return (
-    <View style="magrin: 0; padding: 0;">
+    <View style='magrin: 0; padding: 0;'>
       <FormPage form={form} {...designableJson.form}>
         <SchemaField schema={designableJson.schema} />
       </FormPage>
-      <Button onClick={submit} style={{marginTop: '1rem'}}>submit</Button>
+      <Button onClick={submit} style={{ marginTop: '1rem' }}>
+        submit
+      </Button>
     </View>
   )
 }

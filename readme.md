@@ -86,10 +86,24 @@ npm start
 > - 没有文档，可以看一些非官方文章或视频教程
 > - [表单设计器开发指南](https://formilyjs.org/zh-CN/guide/form-builder)
 > - [Designable 应用和源码浅析](https://zhuanlan.zhihu.com/p/431263711)
+> - [Designable其他解读文章](https://www.yuque.com/xjchenhao/development/rncluc)
 
-## 目录详细介绍
+## 设计器目录详细介绍
 
-├─ packages
-  ├─ editor: 基于 `Designable` + `Formily.js` 实现的页面可视化搭建设计器，使用 `rspack` 构建，并做了兼容Taro组件H5渲染处理
-  ├─ mobile: Taro项目demo例子
-  ├─ ui: 使用 `@nutui/nutui-react-taro` 组件库做的适配formily的组件
+├─ editor
+  ├─ src
+    ├─ common 一些组件
+    ├─ components 物料组件
+    ├─ designable designable源代码copy
+      ├─ designable-core 核心逻辑
+      ├─ designable-formily-setters 右侧属性配置栏中复杂属性配置组件
+      ├─ designable-formily-transformer designable的TreeNode与formily的Schema格式互转方法
+      ├─ designable-react 设计器界面组件
+      ├─ designable-shared 通用方法
+    ├─ hooks/useDropTemplate 拖拽物料组件后的处理
+    ├─ locales 国际化配置
+    ├─ schemas 物料组件右侧属性配置栏配置
+    ├─ service 保存页面配置方法
+    ├─ widgets 一些组件设计器界面组件
+    ├─ app.tsx 设计器主界面
+    ├─ index.tsx 入口
