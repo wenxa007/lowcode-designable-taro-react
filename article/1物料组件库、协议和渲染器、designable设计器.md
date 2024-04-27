@@ -153,7 +153,7 @@ export const Input = connect(
   },
   mapProps((props, field) => {
     return {
-      ...props
+      ...props,
     }
   }),
   mapReadPretty(PreviewText.Input)
