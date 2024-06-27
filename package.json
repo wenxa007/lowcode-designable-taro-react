@@ -74,7 +74,8 @@
   },
   "scripts": {
     "installCz": "npm install -g commitizen",
-    "update": "pnpm --recursive update"
+    "update": "pnpm --recursive update",
+    "commit": "cz"
   },
   "workspaces": {
     "packages": [
