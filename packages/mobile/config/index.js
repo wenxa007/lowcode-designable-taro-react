@@ -58,13 +58,19 @@ const config = {
         }
       }
     },
-    webpackChain(chain) {
+    compile: {
+      include: [path.resolve(__dirname, '..', '..', 'ui'), (modulePath) => {
+        const isIncludes = modulePath.includes('@kimeng/vm') || modulePath.includes('@kimeng+vm')
+        return isIncludes
+      }]
+    },
+    webpackChain (chain) {
       chain.merge({
         optimization: {
           splitChunks: {
             cacheGroups: {
               customGroup: {
-                test(module) {
+                test (module) {
                   return /@kimeng[\\/]vm/.test(module.resource)
                 },
                 name: 'vm',
@@ -98,7 +104,10 @@ const config = {
       }
     },
     compile: {
-      include: [path.resolve(__dirname, '..', '..', 'ui'), (modulePath) => modulePath.includes('@kimeng/vm')]
+      include: [path.resolve(__dirname, '..', '..', 'ui'), (modulePath) => {
+        const isIncludes = modulePath.includes('@kimeng/vm') || modulePath.includes('@kimeng+vm')
+        return isIncludes
+      }]
     }
   },
   alias: {
